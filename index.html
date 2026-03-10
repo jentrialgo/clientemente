@@ -27,50 +27,63 @@
   <main>
     <section id="view-home" class="view active">
       <div class="container">
-        <h1 class="hero-title">Every PDF tool you need, <em>privately</em></h1>
-        <p class="hero-sub">All processing happens in your browser. No files are uploaded anywhere.</p>
+        <div class="hero-section">
+          <div class="hero-left">
+            <h1 class="hero-title">Every tool your <span class="accent">PDFs</span> need.</h1>
+            <p class="hero-sub">Merge, split, rotate &amp; reorder — all processing happens in your browser. Your files never leave your device.</p>
+          </div>
 
-        <div class="tool-grid">
-          <!-- Merge -->
-          <button class="tool-card" data-tool="merge">
-            <div class="tool-card-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"/>
-                <path d="M15 3v4a2 2 0 0 0 2 2h4"/>
-                <path d="M12 11v6"/>
-                <path d="M9 14h6"/>
-              </svg>
-            </div>
-            <h2 class="tool-card-title">Merge PDF</h2>
-            <p class="tool-card-desc">Combine multiple PDF files into one document</p>
-          </button>
+          <div class="hero-right">
+            <!-- Merge -->
+            <button class="tool-card" data-tool="merge">
+              <div class="tool-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"/>
+                  <path d="M15 3v4a2 2 0 0 0 2 2h4"/>
+                  <path d="M12 11v6"/>
+                  <path d="M9 14h6"/>
+                </svg>
+              </div>
+              <div class="tool-card-body">
+                <h2 class="tool-card-title">Merge PDF</h2>
+                <p class="tool-card-desc">Combine multiple files into one document</p>
+              </div>
+              <span class="tool-card-arrow">&rarr;</span>
+            </button>
 
-          <!-- Split -->
-          <button class="tool-card" data-tool="split">
-            <div class="tool-card-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"/>
-                <path d="M15 3v4a2 2 0 0 0 2 2h4"/>
-                <path d="M12 11v6"/>
-              </svg>
-            </div>
-            <h2 class="tool-card-title">Split PDF</h2>
-            <p class="tool-card-desc">Extract pages or split a PDF into multiple files</p>
-          </button>
+            <!-- Split -->
+            <button class="tool-card" data-tool="split">
+              <div class="tool-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"/>
+                  <path d="M15 3v4a2 2 0 0 0 2 2h4"/>
+                  <path d="M12 11v6"/>
+                </svg>
+              </div>
+              <div class="tool-card-body">
+                <h2 class="tool-card-title">Split PDF</h2>
+                <p class="tool-card-desc">Extract pages or split into multiple files</p>
+              </div>
+              <span class="tool-card-arrow">&rarr;</span>
+            </button>
 
-          <!-- Rotate / Reorder -->
-          <button class="tool-card" data-tool="rotate">
-            <div class="tool-card-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"/>
-                <path d="M15 3v4a2 2 0 0 0 2 2h4"/>
-                <path d="M21 12a9 9 0 1 1-9-9"/>
-                <polyline points="21 3 21 9 15 9"/>
-              </svg>
-            </div>
-            <h2 class="tool-card-title">Rotate &amp; Reorder</h2>
-            <p class="tool-card-desc">Rotate, reorder or delete pages in a PDF</p>
-          </button>
+            <!-- Rotate / Reorder -->
+            <button class="tool-card" data-tool="rotate">
+              <div class="tool-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"/>
+                  <path d="M15 3v4a2 2 0 0 0 2 2h4"/>
+                  <path d="M21 12a9 9 0 1 1-9-9"/>
+                  <polyline points="21 3 21 9 15 9"/>
+                </svg>
+              </div>
+              <div class="tool-card-body">
+                <h2 class="tool-card-title">Rotate &amp; Reorder</h2>
+                <p class="tool-card-desc">Rotate, reorder or delete pages</p>
+              </div>
+              <span class="tool-card-arrow">&rarr;</span>
+            </button>
+          </div>
         </div>
 
         <footer class="site-footer">
