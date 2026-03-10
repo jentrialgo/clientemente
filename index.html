@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Private PDF — Client-Side PDF Tools</title>
+  <meta name="description" content="Free, private PDF tools that run entirely in your browser. Merge, split, rotate and reorder PDF pages — no uploads, no servers.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📄</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- ───────── Header ───────── -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="#" class="logo" id="logo-link">
+        <span class="logo-icon">📄</span>
+        <span class="logo-text">Private <strong>PDF</strong></span>
+      </a>
+      <p class="tagline">100 % client-side — your files never leave your browser</p>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+        <span class="theme-icon">🌙</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ───────── Landing / Tool Picker ───────── -->
+  <main>
+    <section id="view-home" class="view active">
+      <div class="container">
+        <h1 class="hero-title">Every PDF tool you need, <em>privately</em></h1>
+        <p class="hero-sub">All processing happens in your browser. No files are uploaded anywhere.</p>
+
+        <div class="tool-grid">
+          <!-- Merge -->
+          <button class="tool-card" data-tool="merge">
+            <div class="tool-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"/>
+                <path d="M15 3v4a2 2 0 0 0 2 2h4"/>
+                <path d="M12 11v6"/>
+                <path d="M9 14h6"/>
+              </svg>
+            </div>
+            <h2 class="tool-card-title">Merge PDF</h2>
+            <p class="tool-card-desc">Combine multiple PDF files into one document</p>
+          </button>
+
+          <!-- Split -->
+          <button class="tool-card" data-tool="split">
+            <div class="tool-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"/>
+                <path d="M15 3v4a2 2 0 0 0 2 2h4"/>
+                <path d="M12 11v6"/>
+              </svg>
+            </div>
+            <h2 class="tool-card-title">Split PDF</h2>
+            <p class="tool-card-desc">Extract pages or split a PDF into multiple files</p>
+          </button>
+
+          <!-- Rotate / Reorder -->
+          <button class="tool-card" data-tool="rotate">
+            <div class="tool-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"/>
+                <path d="M15 3v4a2 2 0 0 0 2 2h4"/>
+                <path d="M21 12a9 9 0 1 1-9-9"/>
+                <polyline points="21 3 21 9 15 9"/>
+              </svg>
+            </div>
+            <h2 class="tool-card-title">Rotate &amp; Reorder</h2>
+            <p class="tool-card-desc">Rotate, reorder or delete pages in a PDF</p>
+          </button>
+        </div>
+
+        <footer class="site-footer">
+          <p>Built with <a href="https://pdf-lib.js.org/" target="_blank" rel="noopener">pdf-lib</a> &amp; <a href="https://mozilla.github.io/pdf.js/" target="_blank" rel="noopener">pdf.js</a>. No data leaves your device.</p>
+        </footer>
+      </div>
+    </section>
+
+    <!-- ───────── Merge View ───────── -->
+    <section id="view-merge" class="view">
+      <div class="container">
+        <button class="back-btn" data-nav="home">&larr; Back</button>
+        <h1 class="view-title">Merge PDF</h1>
+        <p class="view-desc">Drag &amp; drop PDF files below, reorder them, then merge into a single PDF.</p>
+
+        <div class="drop-zone" id="merge-dropzone">
+          <div class="drop-zone-content">
+            <svg class="drop-zone-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M24 32V16m0 0-7 7m7-7 7 7"/><rect x="6" y="6" width="36" height="36" rx="4"/></svg>
+            <p class="drop-zone-text">Drag &amp; drop PDFs here</p>
+            <span class="drop-zone-or">or</span>
+            <label class="btn btn-primary">
+              Choose Files
+              <input type="file" id="merge-file-input" accept=".pdf" multiple hidden>
+            </label>
+          </div>
+        </div>
+
+        <div id="merge-file-list" class="file-list sortable-list"></div>
+
+        <div id="merge-actions" class="actions-bar hidden">
+          <span id="merge-file-count" class="file-count"></span>
+          <button class="btn btn-primary btn-lg" id="merge-btn">Merge PDFs</button>
+        </div>
+
+        <div id="merge-progress" class="progress-area hidden">
+          <div class="progress-bar"><div class="progress-fill" id="merge-progress-fill"></div></div>
+          <p class="progress-text" id="merge-progress-text">Merging…</p>
+        </div>
+
+        <div id="merge-result" class="result-area hidden">
+          <p class="result-text">✅ Merge complete!</p>
+          <a class="btn btn-success btn-lg" id="merge-download">Download Merged PDF</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── Split View ───────── -->
+    <section id="view-split" class="view">
+      <div class="container">
+        <button class="back-btn" data-nav="home">&larr; Back</button>
+        <h1 class="view-title">Split PDF</h1>
+        <p class="view-desc">Upload a PDF, select pages or ranges, and extract them into separate files.</p>
+
+        <div class="drop-zone" id="split-dropzone">
+          <div class="drop-zone-content">
+            <svg class="drop-zone-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M24 32V16m0 0-7 7m7-7 7 7"/><rect x="6" y="6" width="36" height="36" rx="4"/></svg>
+            <p class="drop-zone-text">Drag &amp; drop a PDF here</p>
+            <span class="drop-zone-or">or</span>
+            <label class="btn btn-primary">
+              Choose File
+              <input type="file" id="split-file-input" accept=".pdf" hidden>
+            </label>
+          </div>
+        </div>
+
+        <div id="split-controls" class="split-controls hidden">
+          <div class="split-mode-bar">
+            <button class="btn btn-sm btn-active" data-split-mode="select">Select Pages</button>
+            <button class="btn btn-sm" data-split-mode="ranges">Custom Ranges</button>
+            <button class="btn btn-sm" data-split-mode="every">Split Every N Pages</button>
+          </div>
+          <div id="split-ranges-input" class="split-ranges-input hidden">
+            <label>Page ranges <small>(e.g. 1-3, 5, 8-10)</small></label>
+            <input type="text" id="split-ranges" class="input" placeholder="1-3, 5, 8-10">
+          </div>
+          <div id="split-every-input" class="split-ranges-input hidden">
+            <label>Split every</label>
+            <input type="number" id="split-every-n" class="input" value="1" min="1">
+            <span>page(s)</span>
+          </div>
+        </div>
+
+        <div id="split-pages" class="page-grid"></div>
+
+        <div id="split-actions" class="actions-bar hidden">
+          <span id="split-page-count" class="file-count"></span>
+          <button class="btn btn-primary btn-lg" id="split-btn">Split PDF</button>
+        </div>
+
+        <div id="split-progress" class="progress-area hidden">
+          <div class="progress-bar"><div class="progress-fill" id="split-progress-fill"></div></div>
+          <p class="progress-text" id="split-progress-text">Splitting…</p>
+        </div>
+
+        <div id="split-result" class="result-area hidden"></div>
+      </div>
+    </section>
+
+    <!-- ───────── Rotate / Reorder View ───────── -->
+    <section id="view-rotate" class="view">
+      <div class="container">
+        <button class="back-btn" data-nav="home">&larr; Back</button>
+        <h1 class="view-title">Rotate &amp; Reorder</h1>
+        <p class="view-desc">Upload a PDF to rotate, reorder or delete pages, then save the result.</p>
+
+        <div class="drop-zone" id="rotate-dropzone">
+          <div class="drop-zone-content">
+            <svg class="drop-zone-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M24 32V16m0 0-7 7m7-7 7 7"/><rect x="6" y="6" width="36" height="36" rx="4"/></svg>
+            <p class="drop-zone-text">Drag &amp; drop a PDF here</p>
+            <span class="drop-zone-or">or</span>
+            <label class="btn btn-primary">
+              Choose File
+              <input type="file" id="rotate-file-input" accept=".pdf" hidden>
+            </label>
+          </div>
+        </div>
+
+        <div id="rotate-toolbar" class="rotate-toolbar hidden">
+          <button class="btn btn-sm" id="rotate-all-left" title="Rotate all left">↺ Rotate All Left</button>
+          <button class="btn btn-sm" id="rotate-all-right" title="Rotate all right">↻ Rotate All Right</button>
+          <button class="btn btn-sm btn-danger" id="rotate-remove-selected" title="Delete selected pages">🗑 Delete Selected</button>
+        </div>
+
+        <div id="rotate-pages" class="page-grid sortable-grid"></div>
+
+        <div id="rotate-actions" class="actions-bar hidden">
+          <span id="rotate-page-count" class="file-count"></span>
+          <button class="btn btn-primary btn-lg" id="rotate-btn">Save PDF</button>
+        </div>
+
+        <div id="rotate-progress" class="progress-area hidden">
+          <div class="progress-bar"><div class="progress-fill" id="rotate-progress-fill"></div></div>
+          <p class="progress-text" id="rotate-progress-text">Processing…</p>
+        </div>
+
+        <div id="rotate-result" class="result-area hidden">
+          <p class="result-text">✅ Done!</p>
+          <a class="btn btn-success btn-lg" id="rotate-download">Download PDF</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Dependencies (CDN, ES module) -->
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+  <script>
+    // Configure pdf.js worker
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+  </script>
+  <script src="https://unpkg.com/sortablejs@1.15.0/Sortable.min.js"></script>
+
+  <!-- App scripts -->
+  <script src="js/app.js"></script>
+  <script src="js/merge.js"></script>
+  <script src="js/split.js"></script>
+  <script src="js/rotate.js"></script>
+</body>
+</html>
