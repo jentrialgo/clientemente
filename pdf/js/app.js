@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════
-   Private PDF — App Shell (Router + Helpers)
+   Clientemente PDF — App Shell (Router + Helpers)
    ═══════════════════════════════════════════ */
 
 const App = (() => {

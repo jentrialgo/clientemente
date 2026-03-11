@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════
-   Private PDF — Rotate & Reorder Tool
+   Clientemente PDF — Rotate & Reorder Tool
    ═══════════════════════════════════════════ */
 
 (() => {
