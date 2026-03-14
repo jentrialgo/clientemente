@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Tools - Clientemente</title>
+    <link rel="stylesheet" href="../shared/css/base.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="../index.html" class="logo-link" id="logo-link">
+                <span class="logo-icon">🖼️</span>
+                <span class="logo-text">Cliente<strong>mente</strong></span>
+            </a>
+            <span class="tagline">Local Image Tools</span>
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+                <span class="theme-icon">🌙</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- ==============================================
+             HOME VIEW
+             ============================================== -->
+        <section id="view-home" class="view active">
+            <div class="hero-section">
+                <div class="hero-left">
+                    <h1 class="hero-title">Private <span class="accent">Image</span> Tools</h1>
+                    <p class="hero-sub">Resize, compress, convert, crop, and make perfect profile photos right in your browser. No uploads required.</p>
+                </div>
+                <div class="hero-right">
+                    <button class="tool-card" data-tool="resize">
+                        <div class="tool-card-icon">⚡</div>
+                        <div class="tool-card-body">
+                            <h2 class="tool-card-title">Resize & Compress</h2>
+                            <p class="tool-card-desc">Scale images, change format, reduce file size</p>
+                        </div>
+                        <div class="tool-card-arrow">→</div>
+                    </button>
+
+                    <button class="tool-card" data-tool="crop">
+                        <div class="tool-card-icon">✂️</div>
+                        <div class="tool-card-body">
+                            <h2 class="tool-card-title">Crop & Rotate</h2>
+                            <p class="tool-card-desc">Trim image edges, rotate and flip</p>
+                        </div>
+                        <div class="tool-card-arrow">→</div>
+                    </button>
+
+                    <button class="tool-card" data-tool="profile">
+                        <div class="tool-card-icon">👤</div>
+                        <div class="tool-card-body">
+                            <h2 class="tool-card-title">Profile Photo Maker</h2>
+                            <p class="tool-card-desc">Create a perfect circle avatar</p>
+                        </div>
+                        <div class="tool-card-arrow">→</div>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==============================================
+             RESIZE / COMPRESS VIEW
+             ============================================== -->
+        <section id="view-resize" class="view">
+            <button class="back-btn" data-nav="home">← Back to Image Tools</button>
+            <h2 class="view-title">Resize & Compress</h2>
+            <p class="view-desc">Change image dimensions and adjust export quality.</p>
+            
+            <div id="resize-dropzone" class="drop-zone card">
+                <div class="drop-icon">📥</div>
+                <h3>Drop an image here</h3>
+                <p>or click to select file</p>
+                <div class="drop-action">
+                    <label class="btn btn-secondary">Select Image
+                        <input type="file" id="resize-file" accept="image/*" class="hidden">
+                    </label>
+                </div>
+            </div>
+
+            <div id="resize-workspace" class="hidden">
+                <div class="workspace-grid" style="display:grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+                    <div class="workspace-preview text-center" style="display:flex; flex-direction:column; align-items:center;">
+                        <div style="background:var(--bg-card); padding:1rem; border-radius:var(--radius-sm); border:1px solid var(--border); max-width:100%;">
+                            <canvas id="resize-canvas" style="max-width:100%; height:auto; display:block; margin:0 auto;"></canvas>
+                        </div>
+                        <div class="meta-info mt-2 text-sm text-muted" id="resize-meta"></div>
+                    </div>
+                    <div class="workspace-controls card" style="display:flex; flex-direction:column; gap:1rem;">
+                        <div class="control-group" style="display:flex; flex-direction:column; gap:0.25rem;">
+                            <label style="font-weight:600; font-size:0.9rem;">Width (px)</label>
+                            <input type="number" id="resize-width" class="input" style="width:100%; padding:0.5rem; border:2px solid var(--border); border-radius:var(--radius-xs);">
+                        </div>
+                        <div class="control-group" style="display:flex; flex-direction:column; gap:0.25rem;">
+                            <label style="font-weight:600; font-size:0.9rem;">Height (px)</label>
+                            <input type="number" id="resize-height" class="input" style="width:100%; padding:0.5rem; border:2px solid var(--border); border-radius:var(--radius-xs);">
+                            <label style="font-size:0.8rem; display:flex; align-items:center; gap:0.25rem; margin-top:0.25rem; cursor:pointer;">
+                                <input type="checkbox" id="resize-lock-ratio" checked> Lock aspect ratio
+                            </label>
+                        </div>
+                        <div class="control-group" style="display:flex; flex-direction:column; gap:0.25rem;">
+                            <label style="font-weight:600; font-size:0.9rem;">Format</label>
+                            <select id="resize-format" class="input" style="width:100%; padding:0.5rem; border:2px solid var(--border); border-radius:var(--radius-xs); background:var(--bg);">
+                                <option value="image/jpeg">JPEG</option>
+                                <option value="image/png">PNG</option>
+                                <option value="image/webp">WebP</option>
+                            </select>
+                        </div>
+                        <div class="control-group" id="resize-quality-group" style="display:flex; flex-direction:column; gap:0.25rem;">
+                            <label style="font-weight:600; font-size:0.9rem;">Quality (<span id="resize-quality-val">80</span>%)</label>
+                            <input type="range" id="resize-quality" min="0.1" max="1" step="0.05" value="0.8" style="width:100%;">
+                        </div>
+                        <div style="flex:1;"></div>
+                        <div class="actions-bar" style="display:flex; gap:0.5rem; flex-direction:column;">
+                            <button class="btn btn-primary" id="resize-download" style="width:100%; padding:0.75rem;">Download</button>
+                            <button class="btn btn-secondary" id="resize-reset" style="width:100%;">Reset / New</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==============================================
+             CROP / ROTATE VIEW
+             ============================================== -->
+        <section id="view-crop" class="view">
+            <button class="back-btn" data-nav="home">← Back to Image Tools</button>
+            <h2 class="view-title">Crop & Rotate</h2>
+            <p class="view-desc">Select a region to keep, rotate or flip your image.</p>
+            
+            <div id="crop-dropzone" class="drop-zone card">
+                <div class="drop-icon">✂️</div>
+                <h3>Drop an image to crop</h3>
+                <p>or click to select file</p>
+                <div class="drop-action">
+                    <label class="btn btn-secondary">Select Image
+                        <input type="file" id="crop-file" accept="image/*" class="hidden">
+                    </label>
+                </div>
+            </div>
+
+            <div id="crop-workspace" class="hidden text-center">
+                <div class="card toolbar" style="display:flex; justify-content:center; gap:0.5rem; margin-bottom:1rem; padding:0.5rem;">
+                    <button class="btn btn-secondary" id="crop-rotate-left" style="padding:0.25rem 0.5rem; font-size:0.85rem;">⟲ Rotate Left</button>
+                    <button class="btn btn-secondary" id="crop-rotate-right" style="padding:0.25rem 0.5rem; font-size:0.85rem;">⟳ Rotate Right</button>
+                    <button class="btn btn-secondary" id="crop-flip-h" style="padding:0.25rem 0.5rem; font-size:0.85rem;">↔ Flip H</button>
+                    <button class="btn btn-secondary" id="crop-flip-v" style="padding:0.25rem 0.5rem; font-size:0.85rem;">↕ Flip V</button>
+                </div>
+                
+                <div style="background:var(--bg-card); padding:1rem; border-radius:var(--radius-sm); border:1px solid var(--border); display:inline-block; max-width:100%; position:relative;">
+                    <canvas id="crop-canvas" style="cursor:crosshair; max-width:100%; height:auto; display:block; touch-action:none;"></canvas>
+                </div>
+
+                <div class="actions-bar mt-2" style="display:flex; justify-content:center; gap:1rem; margin-top:1.5rem;">
+                    <button class="btn btn-secondary px-4 py-2" id="crop-reset">Reset / New</button>
+                    <button class="btn btn-primary px-4 py-2" id="crop-download">Crop & Download</button>
+                </div>
+                <p class="text-muted text-sm mt-1">Drag on the image to draw a crop region.</p>
+            </div>
+        </section>
+
+        <!-- ==============================================
+             PROFILE PHOTO MAKER VIEW
+             ============================================== -->
+        <section id="view-profile" class="view">
+            <button class="back-btn" data-nav="home">← Back to Image Tools</button>
+            <h2 class="view-title">Profile Photo Maker</h2>
+            <p class="view-desc">Crop your photo into a perfect circle with a transparent background.</p>
+            
+            <div id="profile-dropzone" class="drop-zone card">
+                <div class="drop-icon">👤</div>
+                <h3>Drop an image to make avatar</h3>
+                <p>or click to select file</p>
+                <div class="drop-action">
+                    <label class="btn btn-secondary">Select Image
+                        <input type="file" id="profile-file" accept="image/*" class="hidden">
+                    </label>
+                </div>
+            </div>
+
+            <div id="profile-workspace" class="hidden text-center">
+                <div class="profile-container" style="position:relative; width:400px; height:400px; max-width:100%; margin:0 auto; overflow:hidden; border-radius:var(--radius); border:2px solid var(--border); background:#eee; cursor:move; touch-action:none;">
+                    <canvas id="profile-canvas" style="position:absolute; top:0; left:0; transform-origin:0 0;"></canvas>
+                    <div class="profile-overlay" style="position:absolute; inset:0; pointer-events:none; box-shadow:0 0 0 9999px rgba(0,0,0,0.5); border-radius:50%;"></div>
+                </div>
+                
+                <div class="card mt-2" style="max-width:400px; margin:1rem auto; padding:1rem; display:flex; flex-direction:column; gap:0.5rem; align-items:center;">
+                    <label style="font-weight:600; font-size:0.9rem;">Zoom / Scale</label>
+                    <input type="range" id="profile-scale" min="0.1" max="3" step="0.01" value="1" style="width:100%;">
+                </div>
+
+                <div class="actions-bar" style="display:flex; justify-content:center; gap:1rem; margin-top:1.5rem;">
+                    <button class="btn btn-secondary px-4 py-2" id="profile-reset">Reset / New</button>
+                    <button class="btn btn-primary px-4 py-2" id="profile-download">Download Transparent PNG</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="../shared/js/core.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/resize.js"></script>
+    <script src="js/crop.js"></script>
+    <script src="js/profile.js"></script>
+</body>
+</html>
