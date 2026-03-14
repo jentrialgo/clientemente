@@ -1,0 +1,265 @@
+/* ── QR specific accents ────────────────── */
+:root {
+  --clr-qr-url: #8b5cf6;
+  --clr-qr-wifi: #6366f1;
+  --clr-qr-text: #a855f7;
+  --clr-accent: #8b5cf6;
+}
+
+.logo-text strong {
+  color: var(--clr-accent);
+}
+
+/* ═══════════════════════════════════════════
+   HERO  (home view)
+   ═══════════════════════════════════════════ */
+.hero-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: calc(100vh - 200px);
+  gap: 2rem;
+  align-items: center;
+  padding: 3rem 0;
+}
+
+.hero-left {
+  padding-right: 1rem;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 5.5vw, 4rem);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -.04em;
+  margin-bottom: 1.25rem;
+}
+.hero-title .accent {
+  color: var(--clr-accent);
+}
+
+.hero-sub {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  max-width: 400px;
+}
+
+.hero-right {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ── Tool Cards (Home) ───────────────────── */
+.tool-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.5rem 1.75rem;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--surface-dark);
+  text-align: left;
+  overflow: hidden;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.tool-card:hover {
+  transform: translateX(-6px) scale(1.015);
+  box-shadow: var(--shadow-lg);
+}
+.tool-card:active {
+  transform: translateX(-2px) scale(1);
+}
+
+/* Per-tool colours */
+.tool-card[data-tool="url"]  { background: var(--clr-qr-url); }
+.tool-card[data-tool="wifi"] { background: var(--clr-qr-wifi); }
+.tool-card[data-tool="text"] { background: var(--clr-qr-text); }
+
+.tool-card-icon {
+  width: 52px;
+  height: 52px;
+  background: rgba(0,0,0,.1);
+  border-radius: var(--radius-sm);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.tool-card-icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.tool-card-body { flex: 1; min-width: 0; }
+
+.tool-card-title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  margin-bottom: .15rem;
+}
+
+.tool-card-desc {
+  font-size: .88rem;
+  opacity: .7;
+  line-height: 1.4;
+}
+
+.tool-card-arrow {
+  font-size: 1.5rem;
+  font-weight: 700;
+  opacity: .35;
+  transition: opacity var(--transition), transform var(--transition);
+  flex-shrink: 0;
+}
+.tool-card:hover .tool-card-arrow {
+  opacity: .7;
+  transform: translateX(4px);
+}
+
+/* ═══════════════════════════════════════════
+   QR VIEWS
+   ═══════════════════════════════════════════ */
+.qr-view-container {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 3rem;
+  padding: 2rem 0;
+  align-items: start;
+}
+
+.qr-setup {
+  display: flex;
+  flex-direction: column;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: .95rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: .5rem 0;
+  margin-top: 2rem;
+  margin-bottom: .75rem;
+  transition: color var(--transition);
+  letter-spacing: -.01em;
+}
+.back-btn:hover { color: var(--text); }
+
+.view-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  font-weight: 900;
+  letter-spacing: -.035em;
+  margin-bottom: .25rem;
+  display: inline-block;
+}
+
+#view-url .view-title  { color: var(--clr-qr-url); }
+#view-wifi .view-title { color: var(--clr-qr-wifi); }
+#view-text .view-title { color: var(--clr-qr-text); }
+
+.view-desc {
+  color: var(--text-muted);
+  margin-bottom: 2.5rem;
+  font-size: .95rem;
+}
+
+.form-group {
+  margin-bottom: 2rem;
+}
+
+.form-label {
+  display: block;
+  font-size: .85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--text-muted);
+  margin-bottom: .75rem;
+}
+
+.input {
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: .85rem 1.25rem;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.input:focus {
+  border-color: var(--clr-accent);
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+}
+.input-full { width: 100%; }
+
+textarea.input { resize: vertical; min-height: 120px; }
+
+/* QR Preview Panel */
+.qr-preview-panel {
+  position: sticky;
+  top: 100px;
+  background: var(--bg-card);
+  border: 4px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
+  box-shadow: var(--shadow-lg);
+}
+
+.qrcode-canvas {
+  background: #ffffff; /* QR codes always need white background */
+  padding: 1.5rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  min-width: 256px;
+  min-height: 256px;
+}
+.qrcode-canvas img {
+  display: block;
+  max-width: 100%;
+}
+
+.btn-full { width: 100%; }
+
+/* ═══════════════════════════════════════════
+   FOOTER
+   ═══════════════════════════════════════════ */
+.site-footer {
+  margin-top: 4rem;
+  padding: 2rem 0;
+  border-top: 2px solid var(--border);
+  text-align: center;
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.site-footer a { color: var(--text); font-weight: 800; }
+
+@media (max-width: 900px) {
+  .qr-view-container { grid-template-columns: 1fr; }
+  .qr-preview-panel { position: static; max-width: 400px; margin: 0 auto; }
+}
+
+@media (max-width: 768px) {
+  .hero-section { grid-template-columns: 1fr; text-align: center; min-height: auto; }
+  .hero-left { padding: 0; }
+  .hero-sub { margin-left: auto; margin-right: auto; }
+  .header-inner { height: auto; padding: 1rem 0; flex-direction: column; gap: .75rem; }
+  .tagline { order: 3; width: 100%; }
+}

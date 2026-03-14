@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clientemente QR — Client-Side QR Tools</title>
+  <meta name="description" content="Free, private QR code tools that run entirely in your browser. Generate URLs, WiFi, and text QR codes — no storage, no servers.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📱</text></svg>">
+  <link rel="stylesheet" href="../shared/css/base.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- ───────── Header ───────── -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="#" class="logo" id="logo-link">
+        <span class="logo-icon">📱</span>
+        <span class="logo-text">Clientemente <strong>QR</strong></span>
+      </a>
+      <p class="tagline">100 % client-side — no data is ever sent to a server</p>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+        <span class="theme-icon">🌙</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ───────── Landing / Tool Picker ───────── -->
+  <main>
+    <section id="view-home" class="view active">
+      <div class="container">
+        <div class="hero-section">
+          <div class="hero-left">
+            <h1 class="hero-title">Create <span class="accent">QR Codes</span> instantly.</h1>
+            <p class="hero-sub">Generate secure QR codes for URLs, WiFi networks, and plain text without any tracking or server-side processing.</p>
+          </div>
+
+          <div class="hero-right">
+            <!-- URL -->
+            <button class="tool-card" data-tool="url">
+              <div class="tool-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                </svg>
+              </div>
+              <div class="tool-card-body">
+                <h2 class="tool-card-title">Link / URL</h2>
+                <p class="tool-card-desc">Share any website or online resource</p>
+              </div>
+              <span class="tool-card-arrow">&rarr;</span>
+            </button>
+
+            <!-- WiFi -->
+            <button class="tool-card" data-tool="wifi">
+              <div class="tool-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
+                  <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
+                  <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+                  <line x1="12" y1="20" x2="12.01" y2="20"/>
+                </svg>
+              </div>
+              <div class="tool-card-body">
+                <h2 class="tool-card-title">WiFi Network</h2>
+                <p class="tool-card-desc">Help guests connect to your network quickly</p>
+              </div>
+              <span class="tool-card-arrow">&rarr;</span>
+            </button>
+
+            <!-- Text -->
+            <button class="tool-card" data-tool="text">
+              <div class="tool-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <line x1="16" y1="13" x2="8" y2="13"/>
+                  <line x1="16" y1="17" x2="8" y2="17"/>
+                  <polyline points="10 9 9 9 8 9"/>
+                </svg>
+              </div>
+              <div class="tool-card-body">
+                <h2 class="tool-card-title">Plain Text</h2>
+                <p class="tool-card-desc">Generate a QR code from any text snippet</p>
+              </div>
+              <span class="tool-card-arrow">&rarr;</span>
+            </button>
+          </div>
+        </div>
+
+        <footer class="site-footer">
+          <p>Built with <a href="https://github.com/davidshimjs/qrcodejs" target="_blank" rel="noopener">qrcodejs</a>. Non-commercial and private.</p>
+        </footer>
+      </div>
+    </section>
+
+    <!-- ───────── Tool View Template ───────── -->
+    <section id="view-url" class="view">
+      <div class="container qr-view-container">
+        <div class="qr-setup">
+          <button class="back-btn" data-nav="home">&larr; Back</button>
+          <h1 class="view-title">Link QR Code</h1>
+          <p class="view-desc">Enter a URL below to generate a QR code.</p>
+          
+          <div class="form-group">
+            <label class="form-label">URL / Website</label>
+            <input type="url" id="input-url" class="input input-full" placeholder="https://example.com" value="https://">
+          </div>
+        </div>
+
+        <div class="qr-preview-panel">
+          <div id="qrcode-url" class="qrcode-canvas"></div>
+          <button class="btn btn-primary btn-lg btn-full" id="download-url">Download PNG</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-wifi" class="view">
+      <div class="container qr-view-container">
+        <div class="qr-setup">
+          <button class="back-btn" data-nav="home">&larr; Back</button>
+          <h1 class="view-title">WiFi QR Code</h1>
+          <p class="view-desc">Guests can scan this to connect to your WiFi.</p>
+          
+          <div class="form-group">
+            <label class="form-label">Network Name (SSID)</label>
+            <input type="text" id="wifi-ssid" class="input input-full" placeholder="My Home WiFi">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" id="wifi-pass" class="input input-full" placeholder="••••••••">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Security</label>
+            <select id="wifi-sec" class="input input-full">
+              <option value="WPA">WPA/WPA2</option>
+              <option value="WEP">WEP</option>
+              <option value="nopass">None</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="qr-preview-panel">
+          <div id="qrcode-wifi" class="qrcode-canvas"></div>
+          <button class="btn btn-primary btn-lg btn-full" id="download-wifi">Download PNG</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-text" class="view">
+      <div class="container qr-view-container">
+        <div class="qr-setup">
+          <button class="back-btn" data-nav="home">&larr; Back</button>
+          <h1 class="view-title">Text QR Code</h1>
+          <p class="view-desc">Convert any text into a scannable QR code.</p>
+          
+          <div class="form-group">
+            <label class="form-label">Your Text</label>
+            <textarea id="input-text" class="input input-full" rows="5" placeholder="Type something here..."></textarea>
+          </div>
+        </div>
+
+        <div class="qr-preview-panel">
+          <div id="qrcode-text" class="qrcode-canvas"></div>
+          <button class="btn btn-primary btn-lg btn-full" id="download-text">Download PNG</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Dependencies -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  
+  <!-- App scripts -->
+  <script src="../shared/js/core.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/qr.js"></script>
+</body>
+</html>
