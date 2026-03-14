@@ -65,7 +65,7 @@
   border-radius: var(--radius);
   cursor: pointer;
   font-family: inherit;
-  color: var(--surface-dark);
+  color: #141414;
   text-align: left;
   overflow: hidden;
   transition: transform var(--transition), box-shadow var(--transition);

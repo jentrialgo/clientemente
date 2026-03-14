@@ -240,6 +240,9 @@ button { font-family: inherit; }
   color: var(--text-inv);
   border-color: var(--surface-dark);
 }
+[data-theme="dark"] .btn-primary {
+  color: var(--text);
+}
 .btn-primary:hover {
   opacity: .88;
   border-color: var(--surface-dark);
@@ -271,6 +274,9 @@ button { font-family: inherit; }
   background: var(--surface-dark);
   color: var(--text-inv);
   border-color: var(--surface-dark);
+}
+[data-theme="dark"] .btn-active {
+  color: var(--text);
 }
 
 .btn:disabled, .btn.disabled {
