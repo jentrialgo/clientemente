@@ -1,9 +1,12 @@
-/* ── QR specific accents ────────────────── */
+/* ── QR specific accents (Same as PDF for identity) ────────────────── */
 :root {
-  --clr-qr-url: #8b5cf6;
-  --clr-qr-wifi: #6366f1;
-  --clr-qr-text: #a855f7;
-  --clr-accent: #8b5cf6;
+  --clr-merge: #f5c652;
+  --clr-merge-dark: #e0b13e;
+  --clr-split: #97cddb;
+  --clr-split-dark: #6fb5c8;
+  --clr-rotate: #e8744f;
+  --clr-rotate-dark: #d0603c;
+  --clr-accent: #f5c652;
 }
 
 .logo-text strong {
@@ -76,9 +79,9 @@
 }
 
 /* Per-tool colours */
-.tool-card[data-tool="url"]  { background: var(--clr-qr-url); }
-.tool-card[data-tool="wifi"] { background: var(--clr-qr-wifi); }
-.tool-card[data-tool="text"] { background: var(--clr-qr-text); }
+.tool-card[data-tool="url"]  { background: var(--clr-merge); }
+.tool-card[data-tool="wifi"] { background: var(--clr-split); }
+.tool-card[data-tool="text"] { background: var(--clr-rotate); }
 
 .tool-card-icon {
   width: 52px;
@@ -161,9 +164,13 @@
   display: inline-block;
 }
 
-#view-url .view-title  { color: var(--clr-qr-url); }
-#view-wifi .view-title { color: var(--clr-qr-wifi); }
-#view-text .view-title { color: var(--clr-qr-text); }
+#view-url .view-title  { color: var(--clr-merge-dark); }
+#view-wifi .view-title { color: var(--clr-split-dark); }
+#view-text .view-title { color: var(--clr-rotate-dark); }
+
+[data-theme="dark"] #view-url .view-title  { color: var(--clr-merge); }
+[data-theme="dark"] #view-wifi .view-title { color: var(--clr-split); }
+[data-theme="dark"] #view-text .view-title { color: var(--clr-rotate); }
 
 .view-desc {
   color: var(--text-muted);
@@ -236,6 +243,15 @@ textarea.input { resize: vertical; min-height: 120px; }
 }
 
 .btn-full { width: 100%; }
+
+/* Contextual primary colours per view */
+#view-url .btn-primary  { background: var(--clr-merge-dark); border-color: var(--clr-merge-dark); color: #141414; }
+#view-wifi .btn-primary { background: var(--clr-split-dark); border-color: var(--clr-split-dark); color: #141414; }
+#view-text .btn-primary { background: var(--clr-rotate-dark); border-color: var(--clr-rotate-dark); color: #fff; }
+
+#view-url .btn-primary:hover  { background: var(--clr-merge);  border-color: var(--clr-merge); }
+#view-wifi .btn-primary:hover { background: var(--clr-split);  border-color: var(--clr-split); }
+#view-text .btn-primary:hover { background: var(--clr-rotate); border-color: var(--clr-rotate); }
 
 /* ═══════════════════════════════════════════
    FOOTER
