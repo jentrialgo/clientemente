@@ -137,36 +137,70 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.removeChild(link);
     });
 
-    document.getElementById('download-png').addEventListener('click', () => {
-      const svgElement = outputArea.querySelector('svg');
-      if (!svgElement) return;
+    // Canvas creation helper for PNG and Copy Image
+    const createCanvasFromSvg = () => {
+        return new Promise((resolve, reject) => {
+            const svgElement = outputArea.querySelector('svg');
+            if (!svgElement) return reject("No SVG found");
 
-      const serializer = new XMLSerializer();
-      let source = serializer.serializeToString(svgElement);
+            const serializer = new XMLSerializer();
+            let source = serializer.serializeToString(svgElement);
 
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      const img = new Image();
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
 
-      img.onload = () => {
-          canvas.width = img.width;
-          canvas.height = img.height;
-          // Fill background if needed
-          const theme = themeSelect.value;
-          ctx.fillStyle = theme === 'neutral' ? '#ffffff' : (bgColorInput.value || (getAppTheme() === 'dark' ? '#141414' : '#ffffff'));
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          ctx.drawImage(img, 0, 0);
+            img.onload = () => {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const theme = themeSelect.value;
+                ctx.fillStyle = theme === 'neutral' ? '#ffffff' : (bgColorInput.value || (getAppTheme() === 'dark' ? '#141414' : '#ffffff'));
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0);
+                resolve(canvas);
+            };
+            img.onerror = reject;
 
-          const url = canvas.toDataURL('image/png');
-          const link = document.createElement("a");
-          link.href = url;
-          link.download = "mermaid-diagram.png";
-          link.click();
-      };
-      
-      const DOMURL = window.URL || window.webkitURL || window;
-      const svgBlob = new Blob([source], {type: 'image/svg+xml;charset=utf-8'});
-      img.src = DOMURL.createObjectURL(svgBlob);
+            const DOMURL = window.URL || window.webkitURL || window;
+            const svgBlob = new Blob([source], {type: 'image/svg+xml;charset=utf-8'});
+            img.src = DOMURL.createObjectURL(svgBlob);
+        });
+    };
+
+    document.getElementById('download-png').addEventListener('click', async () => {
+        try {
+            const canvas = await createCanvasFromSvg();
+            const url = canvas.toDataURL('image/png');
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "mermaid-diagram.png";
+            link.click();
+        } catch (err) {
+            console.error('Failed to create PNG:', err);
+        }
+    });
+
+    // Copy Image handler
+    document.getElementById('copy-img').addEventListener('click', async () => {
+        try {
+            const canvas = await createCanvasFromSvg();
+            canvas.toBlob(async (blob) => {
+                try {
+                    await navigator.clipboard.write([
+                        new ClipboardItem({ 'image/png': blob })
+                    ]);
+                    const btn = document.getElementById('copy-img');
+                    const origText = btn.innerText;
+                    btn.innerText = 'Copied!';
+                    setTimeout(() => btn.innerText = origText, 2000);
+                } catch (err) {
+                    console.error('Failed to copy image: ', err);
+                    alert("Clipboard access denied or unsupported by your browser.");
+                }
+            }, 'image/png');
+        } catch (err) {
+             console.error('Failed to encode image for clipboard:', err);
+        }
     });
 
     // Copy Code handler
