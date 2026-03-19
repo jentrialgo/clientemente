@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const ctx = canvas.getContext('2d');
   
   const btnReset = document.getElementById('crop-reset');
+  const btnCopy = document.getElementById('crop-copy');
   const btnDownload = document.getElementById('crop-download');
   
   const btnRotL = document.getElementById('crop-rotate-left');
@@ -180,8 +181,8 @@ document.addEventListener('DOMContentLoaded', () => {
     SharedCore.hide(workspace);
   });
 
-  btnDownload.addEventListener('click', () => {
-    if (!currentImage) return;
+  function generateExportCanvas() {
+    if (!currentImage) return null;
 
     const size = getRenderSize();
     
@@ -218,10 +219,38 @@ document.addEventListener('DOMContentLoaded', () => {
     tCtx.drawImage(currentImage, -currentImage.width/2, -currentImage.height/2);
     tCtx.restore();
 
+    return tempCanvas;
+  }
+
+  btnDownload.addEventListener('click', () => {
+    const tempCanvas = generateExportCanvas();
+    if (!tempCanvas) return;
+
     tempCanvas.toBlob((blob) => {
       const ext = ImageUtils.getExtension(originalFile.type);
       const name = originalFile.name.replace(/\.[^/.]+$/, "") + '-cropped.' + ext;
       SharedCore.downloadBlob(blob, name);
     }, originalFile.type, 0.9);
+  });
+
+  btnCopy.addEventListener('click', () => {
+    const tempCanvas = generateExportCanvas();
+    if (!tempCanvas) return;
+
+    tempCanvas.toBlob(async (blob) => {
+      try {
+        await navigator.clipboard.write([
+          new ClipboardItem({ 'image/png': blob })
+        ]);
+        const originalText = btnCopy.textContent;
+        btnCopy.textContent = 'Copied!';
+        setTimeout(() => {
+          btnCopy.textContent = originalText;
+        }, 2000);
+      } catch (err) {
+        console.error('Failed to copy image to clipboard:', err);
+        alert('Failed to copy image to clipboard');
+      }
+    }, 'image/png');
   });
 });

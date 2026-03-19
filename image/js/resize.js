@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const qualityGroup = document.getElementById('resize-quality-group');
   
   const btnDownload = document.getElementById('resize-download');
+  const btnCopy = document.getElementById('resize-copy');
   const btnReset = document.getElementById('resize-reset');
 
   let currentImage = null;
@@ -117,5 +118,28 @@ document.addEventListener('DOMContentLoaded', () => {
       const name = originalFile.name.replace(/\.[^/.]+$/, "") + '-resized.' + ext;
       SharedCore.downloadBlob(blob, name);
     }, format, quality);
+  });
+
+  btnCopy.addEventListener('click', () => {
+    if (!currentImage) return;
+
+    // Clipboard API currently primarily supports image/png.
+    // If the user picked JPEG or WebP, we'll still copy it as PNG for clipboard compatibility,
+    // but the canvas already has the background applied if JPEG was selected in formatSelect.
+    canvas.toBlob(async (blob) => {
+      try {
+        await navigator.clipboard.write([
+          new ClipboardItem({ 'image/png': blob })
+        ]);
+        const originalText = btnCopy.textContent;
+        btnCopy.textContent = 'Copied!';
+        setTimeout(() => {
+          btnCopy.textContent = originalText;
+        }, 2000);
+      } catch (err) {
+        console.error('Failed to copy image to clipboard:', err);
+        alert('Failed to copy image to clipboard');
+      }
+    }, 'image/png');
   });
 });

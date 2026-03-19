@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   const scaleInput = document.getElementById('profile-scale');
   const btnReset = document.getElementById('profile-reset');
+  const btnCopy = document.getElementById('profile-copy');
   const btnDownload = document.getElementById('profile-download');
 
   let currentImage = null;
@@ -140,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
     SharedCore.hide(workspace);
   });
 
-  btnDownload.addEventListener('click', () => {
+  function generateExportBlob(callback) {
     if (!currentImage) return;
 
     const tempCanvas = document.createElement('canvas');
@@ -166,9 +167,31 @@ document.addEventListener('DOMContentLoaded', () => {
     // Reset composite operation just in case
     tCtx.globalCompositeOperation = 'source-over';
 
-    tempCanvas.toBlob((blob) => {
+    tempCanvas.toBlob(callback, 'image/png');
+  }
+
+  btnDownload.addEventListener('click', () => {
+    generateExportBlob((blob) => {
       const name = originalFile.name.replace(/\.[^/.]+$/, "") + '-profile.png';
       SharedCore.downloadBlob(blob, name);
-    }, 'image/png');
+    });
+  });
+
+  btnCopy.addEventListener('click', () => {
+    generateExportBlob(async (blob) => {
+      try {
+        await navigator.clipboard.write([
+          new ClipboardItem({ 'image/png': blob })
+        ]);
+        const originalText = btnCopy.textContent;
+        btnCopy.textContent = 'Copied!';
+        setTimeout(() => {
+          btnCopy.textContent = originalText;
+        }, 2000);
+      } catch (err) {
+        console.error('Failed to copy image to clipboard:', err);
+        alert('Failed to copy image to clipboard');
+      }
+    });
   });
 });
