@@ -241,7 +241,7 @@ button { font-family: inherit; }
   border-color: var(--surface-dark);
 }
 [data-theme="dark"] .btn-primary {
-  color: var(--text);
+  color: var(--text-inv);
 }
 .btn-primary:hover {
   opacity: .88;
@@ -276,7 +276,7 @@ button { font-family: inherit; }
   border-color: var(--surface-dark);
 }
 [data-theme="dark"] .btn-active {
-  color: var(--text);
+  color: var(--text-inv);
 }
 
 .btn:disabled, .btn.disabled {
