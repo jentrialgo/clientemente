@@ -54,13 +54,61 @@
 
 
 .mermaid-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-height: calc(100vh - 200px);
+}
+
+.mermaid-settings {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1rem;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.setting-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.setting-group label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.setting-group input[type="color"] {
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 0;
+  background: none;
+}
+
+.setting-group select.input {
+  min-height: auto;
+  padding: 0.4rem 0.75rem;
+  font-family: inherit;
+  width: auto;
+}
+
+.mermaid-panels {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
-  min-height: calc(100vh - 200px);
+  flex: 1;
 }
+
 @media (max-width: 900px) {
-  .mermaid-container {
+  .mermaid-panels {
     grid-template-columns: 1fr;
   }
 }

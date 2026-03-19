@@ -25,33 +25,64 @@
   </header>
 
   <main class="container mermaid-container">
-    <div class="editor-panel">
-      <div class="panel-header">
-        <h2 class="view-title">Diagram Source</h2>
+    <div class="mermaid-settings">
+      <div class="setting-group">
+        <label for="theme-select">Theme:</label>
+        <select id="theme-select" class="input">
+          <option value="default">Default</option>
+          <option value="dark">Dark</option>
+          <option value="forest">Forest</option>
+          <option value="neutral">Black & White</option>
+        </select>
       </div>
-      <textarea id="mermaid-input" class="input input-full" spellcheck="false" placeholder="graph TD
-    A[Start] --> B{Is it?};
-    B -- Yes --> C[OK];
-    C --> D[Rethink];
-    D --> B;
-    B -- No ----> E[End];">graph TD
-    A[Start] --> B{Is it?};
-    B -- Yes --> C[OK];
-    C --> D[Rethink];
-    D --> B;
-    B -- No ----> E[End];</textarea>
+      <div class="setting-group">
+        <label for="bg-color">Canvas Bg:</label>
+        <input type="color" id="bg-color" value="#ffffff">
+      </div>
+      <div class="setting-group">
+        <label for="node-color">Node Bg:</label>
+        <input type="color" id="node-color" value="#ececff">
+      </div>
+      <div class="setting-group">
+        <label for="line-color">Line Color:</label>
+        <input type="color" id="line-color" value="#333333">
+      </div>
     </div>
     
-    <div class="preview-panel">
-      <div class="panel-header">
-        <h2 class="view-title">Preview</h2>
-        <div class="actions">
-          <button class="btn btn-primary" id="download-svg">Download SVG</button>
-          <button class="btn btn-primary" id="download-png">Download PNG</button>
+    <div class="mermaid-panels">
+      <div class="editor-panel">
+        <div class="panel-header">
+          <h2 class="view-title">Diagram Source</h2>
+          <div class="actions">
+            <button class="btn btn-primary" id="copy-code">Copy Code</button>
+            <button class="btn btn-primary" id="download-mmd">Download .mmd</button>
+          </div>
         </div>
+        <textarea id="mermaid-input" class="input input-full" spellcheck="false" placeholder="graph TD
+      A[Start] --> B{Is it?};
+      B -- Yes --> C[OK];
+      C --> D[Rethink];
+      D --> B;
+      B -- No ----> E[End];">graph TD
+      A[Start] --> B{Is it?};
+      B -- Yes --> C[OK];
+      C --> D[Rethink];
+      D --> B;
+      B -- No ----> E[End];</textarea>
       </div>
-      <div id="mermaid-output" class="output-canvas"></div>
-      <div id="error-message" class="error-message hidden"></div>
+      
+      <div class="preview-panel">
+        <div class="panel-header">
+          <h2 class="view-title">Preview</h2>
+          <div class="actions">
+            <button class="btn btn-primary" id="copy-svg">Copy SVG</button>
+            <button class="btn btn-primary" id="download-svg">SVG</button>
+            <button class="btn btn-primary" id="download-png">PNG</button>
+          </div>
+        </div>
+        <div id="mermaid-output" class="output-canvas"></div>
+        <div id="error-message" class="error-message hidden"></div>
+      </div>
     </div>
   </main>
 
