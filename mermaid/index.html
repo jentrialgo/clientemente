@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clientemente Mermaid — Local Mermaid Editor</title>
+  <meta name="description" content="Free, private Mermaid.js diagram editor. Render diagrams directly in your browser.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧜</text></svg>">
+  <link rel="stylesheet" href="../shared/css/base.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- ───────── Header ───────── -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="../index.html" class="logo" id="logo-link">
+        <span class="logo-icon">🧜‍♀️</span>
+        <span class="logo-text">Clientemente <strong>Mermaid</strong></span>
+      </a>
+      <p class="tagline">100 % client-side — no data is ever sent to a server</p>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+        <span class="theme-icon">🌙</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="container mermaid-container">
+    <div class="editor-panel">
+      <div class="panel-header">
+        <h2 class="view-title">Diagram Source</h2>
+      </div>
+      <textarea id="mermaid-input" class="input input-full" spellcheck="false" placeholder="graph TD
+    A[Start] --> B{Is it?};
+    B -- Yes --> C[OK];
+    C --> D[Rethink];
+    D --> B;
+    B -- No ----> E[End];">graph TD
+    A[Start] --> B{Is it?};
+    B -- Yes --> C[OK];
+    C --> D[Rethink];
+    D --> B;
+    B -- No ----> E[End];</textarea>
+    </div>
+    
+    <div class="preview-panel">
+      <div class="panel-header">
+        <h2 class="view-title">Preview</h2>
+        <div class="actions">
+          <button class="btn btn-primary" id="download-svg">Download SVG</button>
+          <button class="btn btn-primary" id="download-png">Download PNG</button>
+        </div>
+      </div>
+      <div id="mermaid-output" class="output-canvas"></div>
+      <div id="error-message" class="error-message hidden"></div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Powered by <a href="https://mermaid.js.org/" target="_blank" rel="noopener">Mermaid.js</a>. Rendered entirely in your browser.</p>
+    </div>
+  </footer>
+
+  <script src="../shared/js/core.js"></script>
+  <!-- Load Mermaid as ES Module in app.js -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

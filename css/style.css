@@ -96,6 +96,14 @@ body {
     --card-accent: #97cddb;
 }
 
+.tool-card--image {
+    --card-accent: #7ed321;
+}
+
+.tool-card--mermaid {
+    --card-accent: #ffb86c;
+}
+
 .tool-card__icon {
     font-size: 2.5rem;
     margin-bottom: 1.5rem;
