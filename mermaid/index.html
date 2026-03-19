@@ -47,6 +47,15 @@
         <label for="line-color">Line Color:</label>
         <input type="color" id="line-color" value="#333333">
       </div>
+      <div class="setting-group">
+        <label for="export-scale">Export Scale:</label>
+        <select id="export-scale" class="input">
+          <option value="1">1x</option>
+          <option value="2">2x</option>
+          <option value="4" selected>4x (High Res)</option>
+          <option value="8">8x (Ultra)</option>
+        </select>
+      </div>
     </div>
     
     <div class="mermaid-panels">
@@ -54,8 +63,8 @@
         <div class="panel-header">
           <h2 class="view-title">Diagram Source</h2>
           <div class="actions">
-            <button class="btn btn-primary" id="copy-code">Copy Code</button>
-            <button class="btn btn-primary" id="download-mmd">Download .mmd</button>
+            <button class="btn btn-primary btn-sm" id="copy-code">Copy Code</button>
+            <button class="btn btn-primary btn-sm" id="download-mmd">Download .mmd</button>
           </div>
         </div>
         <textarea id="mermaid-input" class="input input-full" spellcheck="false" placeholder="graph TD
@@ -75,10 +84,10 @@
         <div class="panel-header">
           <h2 class="view-title">Preview</h2>
           <div class="actions">
-            <button class="btn btn-primary" id="copy-img">Copy Image</button>
-            <button class="btn btn-primary" id="copy-svg">Copy SVG</button>
-            <button class="btn btn-primary" id="download-svg">SVG</button>
-            <button class="btn btn-primary" id="download-png">PNG</button>
+            <button class="btn btn-primary btn-sm" id="copy-img">Copy Image</button>
+            <button class="btn btn-primary btn-sm" id="copy-svg">Copy SVG</button>
+            <button class="btn btn-primary btn-sm" id="download-svg">SVG</button>
+            <button class="btn btn-primary btn-sm" id="download-png">PNG</button>
           </div>
         </div>
         <div id="mermaid-output" class="output-canvas"></div>

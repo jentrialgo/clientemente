@@ -132,11 +132,21 @@
   align-items: center;
   flex-wrap: wrap;
   gap: .5rem;
+  /* Keep buttons and header on equal visual baseline */
+  min-height: 40px; 
 }
 
 .panel-header .actions {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: .5rem;
+}
+
+/* Force elements to wrap tightly or flex without overflowing the column */
+.panel-header > h2 {
+  white-space: nowrap;
+  margin-bottom: 0;
 }
 
 .input {

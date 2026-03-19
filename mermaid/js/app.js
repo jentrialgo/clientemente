@@ -143,20 +143,36 @@ document.addEventListener('DOMContentLoaded', () => {
             const svgElement = outputArea.querySelector('svg');
             if (!svgElement) return reject("No SVG found");
 
+            const scaleStr = document.getElementById('export-scale')?.value || '4';
+            const scale = parseInt(scaleStr, 10) || 4;
+
+            // Determine dimensions from viewBox or client rect
+            const viewBox = svgElement.viewBox.baseVal;
+            const originalWidth = viewBox && viewBox.width > 0 ? viewBox.width : svgElement.getBoundingClientRect().width;
+            const originalHeight = viewBox && viewBox.height > 0 ? viewBox.height : svgElement.getBoundingClientRect().height;
+
+            const targetWidth = originalWidth * scale;
+            const targetHeight = originalHeight * scale;
+
+            // Clone to avoid modifying the live preview
+            const clonedSvg = svgElement.cloneNode(true);
+            clonedSvg.setAttribute('width', targetWidth);
+            clonedSvg.setAttribute('height', targetHeight);
+
             const serializer = new XMLSerializer();
-            let source = serializer.serializeToString(svgElement);
+            let source = serializer.serializeToString(clonedSvg);
 
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             const img = new Image();
 
             img.onload = () => {
-                canvas.width = img.width;
-                canvas.height = img.height;
+                canvas.width = targetWidth;
+                canvas.height = targetHeight;
                 const theme = themeSelect.value;
                 ctx.fillStyle = theme === 'neutral' ? '#ffffff' : (bgColorInput.value || (getAppTheme() === 'dark' ? '#141414' : '#ffffff'));
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.drawImage(img, 0, 0);
+                ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
                 resolve(canvas);
             };
             img.onerror = reject;
