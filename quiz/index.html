@@ -8,6 +8,7 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
   <link rel="stylesheet" href="../shared/css/base.css">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/builder.css">
 </head>
 <body>
   <!-- ───────── Header ───────── -->
@@ -30,7 +31,7 @@
       <div class="container">
         <div class="hero-section center-text">
           <h1 class="hero-title">Host or Join a <span class="accent">Quiz</span></h1>
-          <p class="hero-sub">Play Kahoot-style quizzes directly via browser peer-to-peer WebRTC.</p>
+          <p class="hero-sub">Play quizzes directly via browser peer-to-peer WebRTC.</p>
           
           <div class="quiz-choices">
             <button class="btn btn-primary btn-lg" data-nav="join">Join Game</button>
@@ -74,9 +75,13 @@
         <h1 class="view-title">Host a Quiz</h1>
         
         <div class="card">
-          <h2>Upload Quiz</h2>
-          <p>Provide a JSON or CSV file containing your questions. <em>(Use dynamic number of choices, 2 to 6).</em></p>
+          <h2>Create or Upload Quiz</h2>
+          <p>Create a new quiz right here, or upload an existing JSON or CSV file containing your questions.</p>
           
+          <div style="margin-bottom: 2rem; text-align: center;">
+             <button class="btn btn-primary btn-lg" data-nav="host-builder">Create New Quiz</button>
+          </div>
+
           <div class="drop-zone" id="quiz-dropzone">
             <div class="drop-zone-content">
               <svg class="drop-zone-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M24 32V16m0 0-7 7m7-7 7 7"/><rect x="6" y="6" width="36" height="36" rx="4"/></svg>
@@ -105,6 +110,31 @@
   }
 ]</code></pre>
           </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── Host Quiz Builder View ───────── -->
+    <section id="view-host-builder" class="view">
+      <div class="container">
+        <button class="back-btn" data-nav="host-setup">&larr; Back</button>
+        <h1 class="view-title">Quiz Builder</h1>
+        
+        <div class="card">
+          <div class="builder-header">
+            <input type="text" id="builder-quiz-title" class="input input-lg full-width" placeholder="Quiz Title" value="My Awesome Quiz" style="margin-bottom: 2rem;">
+          </div>
+          
+          <div id="builder-questions-list">
+            <!-- Questions rendered here -->
+          </div>
+          
+          <button class="btn btn-secondary full-width" id="builder-add-q-btn" style="margin-top: 1rem; border-style: dashed;">+ Add Question</button>
+
+          <div class="results-actions" style="margin-top: 3rem;">
+            <button class="btn btn-primary btn-lg" id="builder-save-play-btn">Play Quiz</button>
+            <button class="btn btn-success btn-lg" id="builder-export-btn">Export JSON</button>
+          </div>
         </div>
       </div>
     </section>
@@ -179,6 +209,7 @@
   
   <script src="../shared/js/core.js"></script>
   <script src="js/host.js"></script>
+  <script src="js/builder.js"></script>
   <script src="js/player.js"></script>
   <script src="js/app.js"></script>
 </body>

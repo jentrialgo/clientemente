@@ -1,0 +1,89 @@
+
+/* Quiz Builder Styles */
+.builder-q-card {
+  background: var(--bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+.builder-q-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+.builder-q-header .input {
+  flex: 1;
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+.builder-q-delete {
+  background: none;
+  font-size: 1.5rem;
+  color: var(--danger);
+  border: none;
+  cursor: pointer;
+  padding: 0 0.5rem;
+}
+.builder-q-meta {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: center;
+}
+.builder-q-meta label {
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.builder-options {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 768px) {
+  .builder-options {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.builder-option-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.builder-option-row input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--success);
+}
+.builder-option-row input[type="text"] {
+  flex: 1;
+}
+.builder-option-row button {
+  background: none;
+  border: none;
+  color: var(--danger);
+  cursor: pointer;
+  font-weight: bold;
+}
+.builder-option-row button:disabled {
+  cursor: not-allowed;
+}
+.builder-add-option-btn {
+  margin-top: 1rem;
+  background: none;
+  border: 1px dashed var(--border-color);
+  padding: 0.5rem;
+  width: 100%;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--text-muted);
+}
+.builder-add-option-btn:hover {
+  background: var(--bg-modifier);
+  color: var(--text);
+}
