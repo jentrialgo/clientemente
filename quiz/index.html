@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clientemente Quiz — Real-time P2P Quizzes</title>
+  <meta name="description" content="Host and play interactive quizzes entirely over peer-to-peer WebRTC connections. No servers needed.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+  <link rel="stylesheet" href="../shared/css/base.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- ───────── Header ───────── -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="../index.html" class="logo" id="logo-link">
+        <span class="logo-icon">🎓</span>
+        <span class="logo-text">Clientemente <strong>Quiz</strong></span>
+      </a>
+      <p class="tagline">Real-time P2P Quizzes</p>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+        <span class="theme-icon">🌙</span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- ───────── Home View ───────── -->
+    <section id="view-home" class="view active">
+      <div class="container">
+        <div class="hero-section center-text">
+          <h1 class="hero-title">Host or Join a <span class="accent">Quiz</span></h1>
+          <p class="hero-sub">Play Kahoot-style quizzes directly via browser peer-to-peer WebRTC.</p>
+          
+          <div class="quiz-choices">
+            <button class="btn btn-primary btn-lg" data-nav="join">Join Game</button>
+            <button class="btn btn-secondary btn-lg" data-nav="host-setup">Host Game</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── Join View ───────── -->
+    <section id="view-join" class="view">
+      <div class="container center-text">
+        <button class="back-btn" data-nav="home">&larr; Back</button>
+        <h1 class="view-title">Join Game</h1>
+        <div class="join-form card">
+          <input type="text" id="join-pin" class="input input-lg" placeholder="Game PIN" autocomplete="off" uppercase>
+          <input type="text" id="join-name" class="input input-lg" placeholder="Nickname" autocomplete="off">
+          <button class="btn btn-primary btn-lg full-width" id="join-btn">Enter</button>
+          <p id="join-error" class="error-text hidden"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── Player Game View (Waiting/Answering) ───────── -->
+    <section id="view-player-game" class="view">
+      <div class="container player-container">
+        <div id="player-status" class="player-status card">
+          <h2 id="player-status-text">Connecting...</h2>
+        </div>
+        
+        <div id="player-answers" class="player-answers hidden">
+          <!-- Answer buttons injected dynamically based on question -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── Host Setup View ───────── -->
+    <section id="view-host-setup" class="view">
+      <div class="container">
+        <button class="back-btn" data-nav="home">&larr; Back</button>
+        <h1 class="view-title">Host a Quiz</h1>
+        
+        <div class="card">
+          <h2>Upload Quiz</h2>
+          <p>Provide a JSON or CSV file containing your questions. <em>(Use dynamic number of choices, 2 to 6).</em></p>
+          
+          <div class="drop-zone" id="quiz-dropzone">
+            <div class="drop-zone-content">
+              <svg class="drop-zone-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M24 32V16m0 0-7 7m7-7 7 7"/><rect x="6" y="6" width="36" height="36" rx="4"/></svg>
+              <p class="drop-zone-text">Drag &amp; drop Quiz JSON/CSV here</p>
+              <span class="drop-zone-or">or</span>
+              <label class="btn btn-primary">
+                Choose File
+                <input type="file" id="quiz-file-input" accept=".json,.csv" hidden>
+              </label>
+            </div>
+          </div>
+          
+          <div id="quiz-preview" class="hidden">
+            <p><strong>Loaded:</strong> <span id="quiz-title-preview">Unknown</span> (<span id="quiz-count">0</span> questions)</p>
+            <button class="btn btn-success btn-lg" id="host-start-lobby-btn">Create Lobby</button>
+          </div>
+          
+          <p class="helper-text" style="margin-top: 2rem;">
+            <strong>Sample JSON format:</strong>
+            <pre><code>[
+  {
+    "question": "What is 2+2?",
+    "options": ["3", "4", "5"],
+    "correctIndex": 1,
+    "time": 20
+  }
+]</code></pre>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── Host Lobby View ───────── -->
+    <section id="view-host-lobby" class="view">
+      <div class="container host-lobby-container">
+        <div class="lobby-info card">
+          <h2>Join at: <strong><span id="lobby-url"></span></strong></h2>
+          <h1>Game PIN: <span id="lobby-pin" class="accent">Generating...</span></h1>
+          <div id="lobby-qr" class="qr-container"></div>
+        </div>
+        
+        <div class="lobby-players card">
+          <h3>Players (<span id="player-count">0</span>)</h3>
+          <ul id="player-list" class="player-list"></ul>
+          <button class="btn btn-primary btn-lg full-width" id="host-start-game-btn" disabled>Start Quiz</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── Host Game View ───────── -->
+    <section id="view-host-game" class="view">
+      <div class="container host-game-container">
+        <div class="question-header">
+          <h1 id="host-question-text" class="question-text">Question goes here</h1>
+          <div id="host-timer" class="timer">20</div>
+        </div>
+        
+        <!-- Could show image if added in future -->
+        
+        <div id="host-options" class="host-options-grid">
+          <!-- Text options injected dynamically -->
+        </div>
+
+        <div id="host-answers-count" class="answers-count">
+          Answers: <span id="current-answers">0</span> / <span id="total-players">0</span>
+        </div>
+
+        <div id="host-next-controls" class="hidden center-text">
+          <button class="btn btn-primary btn-lg" id="host-next-btn">Next</button>
+        </div>
+      </div>
+    </section>
+    
+    <!-- ───────── Host Scoreboard View ───────── -->
+    <section id="view-host-scoreboard" class="view">
+        <div class="container center-text">
+            <h1 class="view-title">Leaderboard</h1>
+            <div id="scoreboard-list" class="scoreboard card"></div>
+            <button class="btn btn-primary btn-lg" id="host-next-scoreboard-btn">Next</button>
+        </div>
+    </section>
+
+    <!-- ───────── Host Results View ───────── -->
+    <section id="view-host-results" class="view">
+      <div class="container center-text">
+        <h1 class="view-title">Quiz Finished!</h1>
+        <div id="final-podium" class="podium card"></div>
+        <div class="results-actions">
+          <button class="btn btn-success btn-lg" id="host-download-results-btn">Download Results CSV</button>
+          <button class="btn btn-secondary btn-lg" data-nav="home">Back to Home</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Dependencies -->
+  <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  
+  <script src="../shared/js/core.js"></script>
+  <script src="js/host.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
