@@ -19,12 +19,17 @@
   gap: 1rem;
 }
 
-.join-form .input-lg {
+.join-form #join-pin {
   text-transform: uppercase;
+  font-size: 1.5rem;
+  letter-spacing: 0.1em;
+  text-align: center;
 }
 
 .join-form #join-name {
   text-transform: none;
+  font-size: 1.25rem;
+  text-align: center;
 }
 
 .error-text {

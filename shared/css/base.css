@@ -284,5 +284,51 @@ button { font-family: inherit; }
   pointer-events: none;
 }
 
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--bg-modifier);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  color: var(--text-muted);
+  font-size: .85rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: .4rem .85rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  transition: color var(--transition), background var(--transition), border-color var(--transition);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.back-btn:hover { 
+  color: var(--text); 
+  background: var(--bg-card);
+  border-color: var(--text-muted);
+}
+
 /* ── Hidden utility ── */
 .hidden { display: none !important; }
+
+/* ═══════════════════════════════════════════
+   INPUTS
+   ═══════════════════════════════════════════ */
+.input {
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: .85rem 1.25rem;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.input:focus {
+  border-color: var(--clr-accent);
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+}
+.input-full, .full-width { width: 100%; box-sizing: border-box; }
+.input-lg { padding: 1rem 1.5rem; font-size: 1.25rem; }
