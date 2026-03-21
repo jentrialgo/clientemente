@@ -158,7 +158,8 @@ function handleClientMessage(conn, data) {
         connectedPlayers[conn.peer] = {
             connection: conn,
             name: data.name,
-            score: 0
+            score: 0,
+            answers: []
         };
         updateLobbyPlayers();
         conn.send({ type: 'joined', success: true });
@@ -167,13 +168,24 @@ function handleClientMessage(conn, data) {
             answeredPlayersThisRound.add(conn.peer);
             
             const q = currentQuiz[currentQuestionIndex];
-            if (data.choice === q.correctIndex) {
+            const timeTaken = q.time - currentQuestionTimeLeft;
+            const isCorrect = data.choice === q.correctIndex;
+            let points = 0;
+
+            if (isCorrect) {
                 // Score calculation: max 1000, min 500 based on time
                 const timeRatio = currentQuestionTimeLeft / q.time;
-                const points = Math.round(500 + (500 * timeRatio));
+                points = Math.round(500 + (500 * timeRatio));
                 connectedPlayers[conn.peer].score += points;
             }
-            
+
+            connectedPlayers[conn.peer].answers.push({
+                questionIndex: currentQuestionIndex,
+                choice: data.choice,
+                isCorrect: isCorrect,
+                timeTaken: timeTaken,
+                points: points
+            });
             document.getElementById('current-answers').textContent = answeredPlayersThisRound.size;
             
             if (answeredPlayersThisRound.size >= Object.keys(connectedPlayers).length) {
@@ -251,8 +263,21 @@ function showQuestion() {
 function endQuestion() {
     clearInterval(currentQuestionTimer);
     isAcceptingAnswers = false;
-    
+
     const q = currentQuiz[currentQuestionIndex];
+
+    Object.keys(connectedPlayers).forEach(peer => {
+        if (!answeredPlayersThisRound.has(peer)) {
+            connectedPlayers[peer].answers.push({
+                questionIndex: currentQuestionIndex,
+                choice: -1,
+                isCorrect: false,
+                timeTaken: q.time,
+                points: 0
+            });
+        }
+    });
+
     const options = document.getElementById('host-options').children;
     for (let i = 0; i < options.length; i++) {
         if (i === q.correctIndex) {
@@ -314,12 +339,39 @@ function showFinalResults() {
 
 document.getElementById('host-download-results-btn').addEventListener('click', () => {
     const sorted = Object.values(connectedPlayers).sort((a, b) => b.score - a.score);
-    let csv = "Rank,Player,Score\n";
-    sorted.forEach((p, idx) => {
-        csv += `${idx + 1},${p.name},${p.score}\n`;
-    });
     
-    const blob = new Blob([csv], { type: 'text/csv' });
+    // Generate CSV Headers
+    let csv = "Rank,Player,Total Score";
+    const numQuestions = currentQuiz.length;
+    for (let i = 0; i < numQuestions; i++) {
+        csv += `,Q${i + 1} Answer,Q${i + 1} Correct,Q${i + 1} Time(s),Q${i + 1} Points`;
+    }
+    csv += "\n";
+    
+    // Generate Rows
+    sorted.forEach((p, idx) => {
+        csv += `${idx + 1},"${p.name.replace(/"/g, '""')}",${p.score}`;
+        
+        // Ensure answers are sorted by question index just in case
+        let pAnswers = p.answers ? [...p.answers].sort((a, b) => a.questionIndex - b.questionIndex) : [];
+        
+        for (let i = 0; i < numQuestions; i++) {
+            const ans = pAnswers.find(a => a.questionIndex === i);
+            if (ans) {
+                let answerText = ans.choice === -1 ? 'None' : String.fromCharCode(65 + ans.choice);
+                // Try to get the actual text if available
+                if (ans.choice !== -1 && currentQuiz[i] && currentQuiz[i].options[ans.choice]) {
+                    answerText = currentQuiz[i].options[ans.choice].replace(/"/g, '""');
+                }
+                csv += `,"${answerText}",${ans.isCorrect ? 'Yes' : 'No'},${ans.timeTaken.toFixed(1)},${ans.points}`;
+            } else {
+                csv += `,"None",No,0,0`;
+            }
+        }
+        csv += "\n";
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
