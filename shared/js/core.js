@@ -18,7 +18,7 @@ const SharedCore = (() => {
   }
 
   function initRouter(options = {}) {
-    const { toolCards, backBtns, logoLink } = options;
+    const { toolCards, backBtns } = options;
 
     if (toolCards) {
       toolCards.forEach(card => {
@@ -29,13 +29,6 @@ const SharedCore = (() => {
     if (backBtns) {
       backBtns.forEach(btn => {
         btn.addEventListener('click', () => navigate(btn.dataset.nav));
-      });
-    }
-
-    if (logoLink) {
-      logoLink.addEventListener('click', e => {
-        e.preventDefault();
-        navigate('home');
       });
     }
 
