@@ -1,5 +1,6 @@
 // Initialize App and Views
 document.addEventListener('DOMContentLoaded', () => {
+    SharedCore.initTheme(document.getElementById('theme-toggle'));
     SharedCore.initRouter({
         toolCards: null, // we don't have tool cards here
         backBtns: document.querySelectorAll('.back-btn'),
