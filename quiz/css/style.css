@@ -109,14 +109,18 @@
 .timer {
   font-size: 3rem;
   font-weight: 800;
-  background: var(--accent);
-  color: white;
+  background: var(--clr-accent);
+  color: var(--clr-primary);
   width: 100px;
   height: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
+}
+
+.accent {
+  color: var(--clr-accent);
 }
 
 .host-options-grid {
