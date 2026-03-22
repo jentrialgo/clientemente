@@ -57,7 +57,18 @@ function joinGame() {
 
 function handleHostMessage(data) {
     if (data.type === 'joined') {
-        setPlayerStatus(`You're in! Waiting for host to start...`);
+        if (data.success) {
+            setPlayerStatus(`You're in! Waiting for host to start...`);
+        } else {
+            SharedCore.navigate('join');
+            const errorEl = document.getElementById('join-error');
+            errorEl.textContent = data.reason || 'Join failed';
+            errorEl.classList.remove('hidden');
+            if (hostConn) {
+                hostConn.close();
+                hostConn = null;
+            }
+        }
     } else if (data.type === 'start_question') {
         renderAnswerButtons(data.optionsCount);
     } else if (data.type === 'end_question') {

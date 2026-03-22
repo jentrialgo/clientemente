@@ -155,6 +155,13 @@ function startLobby() {
 
 function handleClientMessage(conn, data) {
     if (data.type === 'join') {
+        const nameExists = Object.values(connectedPlayers).some(p => p.name.toLowerCase() === data.name.toLowerCase());
+        
+        if (nameExists) {
+            conn.send({ type: 'joined', success: false, reason: 'Name is already taken.' });
+            return;
+        }
+
         connectedPlayers[conn.peer] = {
             connection: conn,
             name: data.name,
