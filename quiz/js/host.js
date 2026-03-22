@@ -272,6 +272,8 @@ function endQuestion() {
     isAcceptingAnswers = false;
 
     const q = currentQuiz[currentQuestionIndex];
+    const choiceCounts = new Array(q.options.length).fill(0);
+    let totalAnswers = 0;
 
     Object.keys(connectedPlayers).forEach(peer => {
         if (!answeredPlayersThisRound.has(peer)) {
@@ -283,6 +285,14 @@ function endQuestion() {
                 points: 0
             });
         }
+        
+        // Tally answers
+        const playerAnswers = connectedPlayers[peer].answers;
+        const lastAnswer = playerAnswers[playerAnswers.length - 1];
+        if (lastAnswer && lastAnswer.choice !== -1) {
+            choiceCounts[lastAnswer.choice]++;
+            totalAnswers++;
+        }
     });
 
     const options = document.getElementById('host-options').children;
@@ -292,6 +302,21 @@ function endQuestion() {
         } else {
             options[i].classList.add('incorrect');
         }
+
+        const pct = totalAnswers > 0 ? Math.round((choiceCounts[i] / totalAnswers) * 100) : 0;
+        
+        const statsDiv = document.createElement('div');
+        statsDiv.className = 'result-stats';
+        statsDiv.style.marginTop = '15px';
+        statsDiv.innerHTML = `
+            <div style="width: 100%; height: 10px; background: rgba(0,0,0,0.2); border-radius: 5px; overflow: hidden;">
+                <div style="width: ${pct}%; height: 100%; background: #ffffff; transition: width 0.5s ease-out;"></div>
+            </div>
+            <div style="text-align: right; font-size: 0.9em; margin-top: 5px; font-weight: bold;">
+                ${pct}% (${choiceCounts[i]})
+            </div>
+        `;
+        options[i].appendChild(statsDiv);
     }
 
     broadcast({ type: 'end_question', correctIndex: q.correctIndex });
