@@ -85,6 +85,13 @@ function handleHostMessage(data) {
     } else if (data.type === 'quiz_end') {
         setPlayerStatus(`Quiz Finished!\nYour final score: ${myScore}`);
         document.getElementById('player-answers').classList.add('hidden');
+    } else if (data.type === 'host_left') {
+        setPlayerStatus(`Host has ended the game and closed the lobby.`);
+        document.getElementById('player-answers').classList.add('hidden');
+        if (hostConn) {
+            hostConn.close();
+            hostConn = null;
+        }
     }
 }
 

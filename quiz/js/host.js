@@ -386,3 +386,36 @@ document.getElementById('host-download-results-btn').addEventListener('click', (
     a.click();
     URL.revokeObjectURL(url);
 });
+
+// ---------------- CLEANUP ----------------
+
+document.querySelectorAll('[data-nav="home"]').forEach(btn => {
+    btn.addEventListener('click', resetHostState);
+});
+
+function resetHostState() {
+    if (hostPeer) {
+        broadcast({ type: 'host_left' });
+        setTimeout(() => {
+            if (hostPeer) {
+                hostPeer.destroy();
+                hostPeer = null;
+            }
+        }, 500); // Give it a moment to send the message
+    }
+    
+    connectedPlayers = {};
+    hostPin = null;
+    currentQuiz = null;
+    currentQuestionIndex = 0;
+    currentQuestionTimeLeft = 0;
+    answeredPlayersThisRound = new Set();
+    isAcceptingAnswers = false;
+    
+    // reset UI
+    document.getElementById('quiz-dropzone').classList.remove('hidden');
+    document.getElementById('quiz-preview').classList.add('hidden');
+    if (quizFileInput) quizFileInput.value = '';
+    
+    updateLobbyPlayers();
+}
