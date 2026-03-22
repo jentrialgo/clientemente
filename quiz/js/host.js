@@ -249,10 +249,15 @@ function showQuestion() {
     const optionsContainer = document.getElementById('host-options');
     optionsContainer.innerHTML = '';
     q.options.forEach((opt, idx) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'option-wrapper';
+        
         const div = document.createElement('div');
         div.className = `option-card color-${idx}`;
         div.textContent = opt;
-        optionsContainer.appendChild(div);
+        
+        wrapper.appendChild(div);
+        optionsContainer.appendChild(wrapper);
     });
 
     broadcast({ type: 'start_question', optionsCount: q.options.length, time: currentQuestionTimeLeft });
@@ -295,28 +300,29 @@ function endQuestion() {
         }
     });
 
-    const options = document.getElementById('host-options').children;
-    for (let i = 0; i < options.length; i++) {
+    const wrappers = document.getElementById('host-options').children;
+    for (let i = 0; i < wrappers.length; i++) {
+        const optionCard = wrappers[i].querySelector('.option-card');
+        
         if (i === q.correctIndex) {
-            options[i].classList.add('correct');
+            optionCard.classList.add('correct');
         } else {
-            options[i].classList.add('incorrect');
+            optionCard.classList.add('incorrect');
         }
 
         const pct = totalAnswers > 0 ? Math.round((choiceCounts[i] / totalAnswers) * 100) : 0;
         
         const statsDiv = document.createElement('div');
         statsDiv.className = 'result-stats';
-        statsDiv.style.marginTop = '15px';
         statsDiv.innerHTML = `
-            <div style="width: 100%; height: 10px; background: rgba(0,0,0,0.2); border-radius: 5px; overflow: hidden;">
-                <div style="width: ${pct}%; height: 100%; background: #ffffff; transition: width 0.5s ease-out;"></div>
+            <div class="result-stats-bar">
+                <div class="result-stats-fill" style="width: ${pct}%;"></div>
             </div>
-            <div style="text-align: right; font-size: 0.9em; margin-top: 5px; font-weight: bold;">
+            <div class="result-stats-label">
                 ${pct}% (${choiceCounts[i]})
             </div>
         `;
-        options[i].appendChild(statsDiv);
+        wrappers[i].appendChild(statsDiv);
     }
 
     broadcast({ type: 'end_question', correctIndex: q.correctIndex });
