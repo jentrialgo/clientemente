@@ -38,6 +38,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     time: 20
                 },
                 {
+                    question: "POLL: Which feature is more important?",
+                    options: ["Dark Mode", "Offline mode", "Faster loading", "More colors"],
+                    poll: true,
+                    time: 20
+                },
+                {
+                    question: "MULTIPLE: Which of these are programming languages? (Select all that apply)",
+                    type: "multiple",
+                    correctIndices: [0, 2, 3],
+                    options: ["JavaScript", "HTML", "Python", "Rust"],
+                    time: 20
+                },
+                {
                     question: "What's the best strategy in a zombie apocalypse?",
                     options: ["Run away", "Find weapons", "Befriend them"],
                     correctIndex: 0,

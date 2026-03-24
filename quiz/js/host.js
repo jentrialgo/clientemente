@@ -176,10 +176,20 @@ function handleClientMessage(conn, data) {
             
             const q = currentQuiz[currentQuestionIndex];
             const timeTaken = q.time - currentQuestionTimeLeft;
-            const isCorrect = data.choice === q.correctIndex;
+            let isCorrect = false;
             let points = 0;
 
-            if (isCorrect) {
+            if (q.poll) {
+                isCorrect = true; // For polls, any answer is "correct" for stats purposes
+            } else if (q.type === 'multiple') {
+                const selectedIndices = Array.isArray(data.choices) ? [...data.choices].sort() : [];
+                const correctIndices = Array.isArray(q.correctIndices) ? [...q.correctIndices].sort() : [];
+                isCorrect = selectedIndices.length === correctIndices.length && selectedIndices.every((v, i) => v === correctIndices[i]);
+            } else {
+                isCorrect = data.choice === q.correctIndex;
+            }
+
+            if (isCorrect && !q.poll) {
                 // Score calculation: max 1000, min 500 based on time
                 const timeRatio = currentQuestionTimeLeft / q.time;
                 points = Math.round(500 + (500 * timeRatio));
@@ -188,7 +198,7 @@ function handleClientMessage(conn, data) {
 
             connectedPlayers[conn.peer].answers.push({
                 questionIndex: currentQuestionIndex,
-                choice: data.choice,
+                choice: q.type === 'multiple' ? (data.choices || []) : data.choice,
                 isCorrect: isCorrect,
                 timeTaken: timeTaken,
                 points: points
@@ -260,7 +270,12 @@ function showQuestion() {
         optionsContainer.appendChild(wrapper);
     });
 
-    broadcast({ type: 'start_question', optionsCount: q.options.length, time: currentQuestionTimeLeft });
+    broadcast({ 
+        type: 'start_question', 
+        optionsCount: q.options.length, 
+        time: currentQuestionTimeLeft,
+        questionType: q.type || 'single'
+    });
 
     clearInterval(currentQuestionTimer);
     currentQuestionTimer = setInterval(() => {
@@ -295,8 +310,15 @@ function endQuestion() {
         const playerAnswers = connectedPlayers[peer].answers;
         const lastAnswer = playerAnswers[playerAnswers.length - 1];
         if (lastAnswer && lastAnswer.choice !== -1) {
-            choiceCounts[lastAnswer.choice]++;
-            totalAnswers++;
+            if (Array.isArray(lastAnswer.choice)) {
+                lastAnswer.choice.forEach(c => {
+                    choiceCounts[c]++;
+                });
+                totalAnswers++;
+            } else {
+                choiceCounts[lastAnswer.choice]++;
+                totalAnswers++;
+            }
         }
     });
 
@@ -304,10 +326,20 @@ function endQuestion() {
     for (let i = 0; i < wrappers.length; i++) {
         const optionCard = wrappers[i].querySelector('.option-card');
         
-        if (i === q.correctIndex) {
-            optionCard.classList.add('correct');
-        } else {
-            optionCard.classList.add('incorrect');
+        if (!q.poll) {
+            if (q.type === 'multiple') {
+                if (q.correctIndices && q.correctIndices.includes(i)) {
+                    optionCard.classList.add('correct');
+                } else {
+                    optionCard.classList.add('incorrect');
+                }
+            } else {
+                if (i === q.correctIndex) {
+                    optionCard.classList.add('correct');
+                } else {
+                    optionCard.classList.add('incorrect');
+                }
+            }
         }
 
         const pct = totalAnswers > 0 ? Math.round((choiceCounts[i] / totalAnswers) * 100) : 0;
@@ -395,13 +427,20 @@ document.getElementById('host-download-results-btn').addEventListener('click', (
         
         for (let i = 0; i < numQuestions; i++) {
             const ans = pAnswers.find(a => a.questionIndex === i);
-            if (ans) {
+            if (ans && currentQuiz[i]) {
+                const q = currentQuiz[i];
                 let answerText = ans.choice === -1 ? 'None' : String.fromCharCode(65 + ans.choice);
-                // Try to get the actual text if available
-                if (ans.choice !== -1 && currentQuiz[i] && currentQuiz[i].options[ans.choice]) {
-                    answerText = currentQuiz[i].options[ans.choice].replace(/"/g, '""');
+                
+                if (Array.isArray(ans.choice)) {
+                    answerText = ans.choice.length === 0 ? 'None' : ans.choice.map(idx => q.options[idx] ? q.options[idx].replace(/"/g, '""') : String.fromCharCode(65 + idx)).join(', ');
+                } else if (ans.choice !== -1 && q.options[ans.choice]) {
+                    answerText = q.options[ans.choice].replace(/"/g, '""');
                 }
-                csv += `,"${answerText}",${ans.isCorrect ? 'Yes' : 'No'},${ans.timeTaken.toFixed(1)},${ans.points}`;
+
+                // If it's a poll, use N/A for Correctness
+                const isCorrectText = q.poll ? 'N/A' : (ans.isCorrect ? 'Yes' : 'No');
+                
+                csv += `,"${answerText}",${isCorrectText},${ans.timeTaken.toFixed(1)},${ans.points}`;
             } else {
                 csv += `,"None",No,0,0`;
             }

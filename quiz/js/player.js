@@ -70,7 +70,7 @@ function handleHostMessage(data) {
             }
         }
     } else if (data.type === 'start_question') {
-        renderAnswerButtons(data.optionsCount);
+        renderAnswerButtons(data.optionsCount, data.questionType || 'single');
     } else if (data.type === 'end_question') {
         setPlayerStatus('Question ended.');
         document.getElementById('player-answers').classList.add('hidden');
@@ -101,28 +101,80 @@ function setPlayerStatus(msg) {
     document.getElementById('player-status').classList.remove('hidden');
 }
 
-function renderAnswerButtons(count) {
+function renderAnswerButtons(count, questionType = 'single') {
     document.getElementById('player-status').classList.add('hidden');
     const answersContainer = document.getElementById('player-answers');
     answersContainer.innerHTML = '';
     answersContainer.classList.remove('hidden');
 
+    let selectedChoices = [];
+
     for (let i = 0; i < count; i++) {
         const btn = document.createElement('button');
         btn.className = `player-btn color-${i}`;
-        btn.onclick = () => sendAnswer(i, answersContainer.children);
+        
+        if (questionType === 'multiple') {
+            btn.onclick = () => {
+                const idx = selectedChoices.indexOf(i);
+                if (idx > -1) {
+                    selectedChoices.splice(idx, 1);
+                    btn.classList.remove('selected');
+                } else {
+                    selectedChoices.push(i);
+                    btn.classList.add('selected');
+                }
+            };
+        } else {
+            btn.onclick = () => sendAnswer(i, answersContainer.children, questionType);
+        }
+        
         answersContainer.appendChild(btn);
+    }
+
+    if (questionType === 'multiple') {
+        const submitWrapper = document.createElement('div');
+        submitWrapper.style.width = '100%';
+        submitWrapper.style.marginTop = '1rem';
+        submitWrapper.style.display = 'flex';
+        submitWrapper.style.justifyContent = 'center';
+        
+        const submitBtn = document.createElement('button');
+        submitBtn.textContent = 'Submit Answers';
+        submitBtn.className = 'btn btn-primary';
+        submitBtn.style.width = '100%';
+        submitBtn.style.padding = '1.5rem';
+        submitBtn.onclick = () => {
+            if (selectedChoices.length === 0) {
+                alert('Please select at least one answer.');
+                return;
+            }
+            sendAnswer(selectedChoices, answersContainer.children, questionType);
+        };
+        submitWrapper.appendChild(submitBtn);
+        answersContainer.appendChild(submitWrapper);
     }
 }
 
-function sendAnswer(choiceIndex, allButtons) {
+function sendAnswer(choiceOrChoices, allElements, questionType = 'single') {
     // Disable all buttons
-    for (let btn of allButtons) {
-        btn.classList.add('disabled');
+    for (let el of allElements) {
+        if (el.tagName.toLowerCase() === 'button') {
+            el.classList.add('disabled');
+        } else if (el.children) {
+            for (let child of el.children) {
+                if (child.tagName && child.tagName.toLowerCase() === 'button') {
+                    child.classList.add('disabled');
+                }
+            }
+        }
     }
     
     // Show 'Answer sent' locally
-    hostConn.send({ type: 'answer', choice: choiceIndex });
+    if (questionType === 'multiple') {
+        hostConn.send({ type: 'answer', choices: choiceOrChoices });
+    } else {
+        hostConn.send({ type: 'answer', choice: choiceOrChoices });
+    }
     setPlayerStatus('Answer sent! Waiting for others...');
     document.getElementById('player-answers').classList.add('hidden');
 }
