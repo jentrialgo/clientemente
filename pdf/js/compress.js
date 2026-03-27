@@ -10,21 +10,21 @@
   const PRESETS = {
     low: {
       label: 'Low',
-      scale: 1,
-      quality: 0.82,
-      note: 'Lightest compression with higher visual quality.'
+      scale: 2,
+      quality: 0.86,
+      note: 'Lightest compression with higher visual quality and sharper output.'
     },
     medium: {
       label: 'Medium',
-      scale: 0.82,
-      quality: 0.64,
-      note: 'Balanced compression for most scanned PDFs.'
+      scale: 1.5,
+      quality: 0.7,
+      note: 'Balanced compression with better retained detail.'
     },
     high: {
       label: 'High',
-      scale: 0.62,
-      quality: 0.45,
-      note: 'Strongest reduction with the highest loss in detail.'
+      scale: 1.1,
+      quality: 0.52,
+      note: 'Strongest reduction with less aggressive downscaling than before.'
     }
   };
 
@@ -126,7 +126,7 @@
 
         const page = await pdfJsDoc.getPage(pageIndex);
         const baseViewport = page.getViewport({ scale: 1 });
-        const renderScale = Math.max(preset.scale, 0.35);
+        const renderScale = Math.max(preset.scale, 1);
         const renderViewport = page.getViewport({ scale: renderScale });
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d', { alpha: false });
