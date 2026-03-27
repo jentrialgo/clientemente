@@ -4,7 +4,7 @@ Clientemente is a suite of pure client-side, browser-based tools designed for pr
 
 ## 🛠️ Included Tools
 
-* **📄 PDF Tools:** Merge, split, rotate, and reorder PDF pages securely. Built with [pdf-lib](https://pdf-lib.js.org/) and pdf.js.
+* **📄 PDF Tools:** Merge, split, compress, rotate, and reorder PDF pages securely. Built with [pdf-lib](https://pdf-lib.js.org/) and pdf.js.
 * **🖼️ Image Tools:** Resize, compress, crop, and make perfect circular profile photos without uploading them anywhere.
 * **🧜‍♀️ Mermaid Editor:** Write and render Mermaid.js diagrams directly in your browser with live preview and high-resolution exports.
 * **📱 QR Generator:** Generate secure QR codes for URLs, WiFi networks, and plain text. Built with qrcodejs.

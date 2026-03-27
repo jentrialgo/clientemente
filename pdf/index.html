@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Clientemente PDF — Client-Side PDF Tools</title>
-  <meta name="description" content="Free, private PDF tools that run entirely in your browser. Merge, split, rotate and reorder PDF pages — no uploads, no servers.">
+  <meta name="description" content="Free, private PDF tools that run entirely in your browser. Merge, split, compress, rotate and reorder PDF pages — no uploads, no servers.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📄</text></svg>">
   <link rel="stylesheet" href="../shared/css/base.css">
   <link rel="stylesheet" href="css/style.css">
@@ -31,7 +31,7 @@
         <div class="hero-section">
           <div class="hero-left">
             <h1 class="hero-title">Every tool your <span class="accent">PDFs</span> need.</h1>
-            <p class="hero-sub">Merge, split, rotate &amp; reorder — all processing happens in your browser. Your files never leave your device.</p>
+            <p class="hero-sub">Merge, split, compress, rotate &amp; reorder — all processing happens in your browser. Your files never leave your device.</p>
           </div>
 
           <div class="hero-right">
@@ -84,11 +84,28 @@
               </div>
               <span class="tool-card-arrow">&rarr;</span>
             </button>
+
+            <!-- Compress -->
+            <button class="tool-card" data-tool="compress">
+              <div class="tool-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"/>
+                  <path d="M15 3v4a2 2 0 0 0 2 2h4"/>
+                  <path d="M12 10v8"/>
+                  <path d="m8.5 14 3.5 4 3.5-4"/>
+                </svg>
+              </div>
+              <div class="tool-card-body">
+                <h2 class="tool-card-title">Compress PDF</h2>
+                <p class="tool-card-desc">Reduce file size with image-based compression presets</p>
+              </div>
+              <span class="tool-card-arrow">&rarr;</span>
+            </button>
           </div>
         </div>
 
         <footer class="site-footer">
-          <p>Built with <a href="https://pdf-lib.js.org/" target="_blank" rel="noopener">pdf-lib</a> &amp; <a href="https://mozilla.github.io/pdf.js/" target="_blank" rel="noopener">pdf.js</a>. No data leaves your device.</p>
+          <p>Built with <a href="https://pdf-lib.js.org/" target="_blank" rel="noopener">pdf-lib</a> &amp; <a href="https://mozilla.github.io/pdf.js/" target="_blank" rel="noopener">pdf.js</a>. Merge, split, compress and reorganize PDFs without uploads.</p>
           <p>Source code available on <a href="https://github.com/jentrialgo/clientemente/" target="_blank" rel="noopener">GitHub</a>.</p>
         </footer>
       </div>
@@ -227,6 +244,85 @@
         </div>
       </div>
     </section>
+
+    <!-- ───────── Compress View ───────── -->
+    <section id="view-compress" class="view">
+      <div class="container">
+        <button class="back-btn" data-nav="home"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Back</button>
+        <h1 class="view-title">Compress PDF</h1>
+        <p class="view-desc">Upload a PDF and shrink it with image-based presets. Best for scanned or image-heavy files.</p>
+
+        <div class="drop-zone" id="compress-dropzone">
+          <div class="drop-zone-content">
+            <svg class="drop-zone-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M24 32V16m0 0-7 7m7-7 7 7"/><rect x="6" y="6" width="36" height="36" rx="4"/></svg>
+            <p class="drop-zone-text">Drag &amp; drop a PDF here</p>
+            <span class="drop-zone-or">or</span>
+            <label class="btn btn-primary">
+              Choose File
+              <input type="file" id="compress-file-input" accept=".pdf" hidden>
+            </label>
+          </div>
+        </div>
+
+        <div id="compress-workspace" class="compress-workspace hidden">
+          <div class="compress-summary card-surface">
+            <div>
+              <p class="compress-label">Selected File</p>
+              <h2 class="compress-file-name" id="compress-file-name">document.pdf</h2>
+            </div>
+            <div class="compress-stats-inline">
+              <span id="compress-file-pages">0 pages</span>
+              <span id="compress-file-size">0 MB</span>
+            </div>
+          </div>
+
+          <div class="compress-panel card-surface">
+            <div>
+              <p class="compress-label">Compression Level</p>
+              <h2 class="compress-heading">Choose a preset</h2>
+              <p class="compress-note">This mode rasterizes each page and re-saves it as JPEG inside a new PDF. It usually helps most on scanned/image-heavy documents and can reduce text sharpness or searchability.</p>
+            </div>
+
+            <div class="compress-presets" id="compress-presets">
+              <button class="btn btn-sm btn-active compress-preset" data-compress-preset="low">Low</button>
+              <button class="btn btn-sm compress-preset" data-compress-preset="medium">Medium</button>
+              <button class="btn btn-sm compress-preset" data-compress-preset="high">High</button>
+            </div>
+
+            <div class="compress-preset-meta" id="compress-preset-meta">Lightest compression with higher visual quality.</div>
+
+            <div class="actions-bar compress-actions">
+              <button class="btn btn-primary btn-lg" id="compress-btn">Compress PDF</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="compress-progress" class="progress-area hidden">
+          <div class="progress-bar"><div class="progress-fill" id="compress-progress-fill"></div></div>
+          <p class="progress-text" id="compress-progress-text">Compressing…</p>
+        </div>
+
+        <div id="compress-result" class="result-area hidden">
+          <p class="result-text" id="compress-result-text">Compression complete.</p>
+          <div class="compress-result-stats">
+            <div class="compress-stat card-surface">
+              <span class="compress-stat-label">Original</span>
+              <strong id="compress-original-size">0 MB</strong>
+            </div>
+            <div class="compress-stat card-surface">
+              <span class="compress-stat-label">Compressed</span>
+              <strong id="compress-new-size">0 MB</strong>
+            </div>
+            <div class="compress-stat card-surface">
+              <span class="compress-stat-label">Change</span>
+              <strong id="compress-saved-size">0%</strong>
+            </div>
+          </div>
+          <p class="compress-result-note" id="compress-result-note"></p>
+          <a class="btn btn-success btn-lg" id="compress-download">Download Compressed PDF</a>
+        </div>
+      </div>
+    </section>
   </main>
 
   <!-- Dependencies (CDN, ES module) -->
@@ -244,5 +340,6 @@
   <script src="js/merge.js"></script>
   <script src="js/split.js"></script>
   <script src="js/rotate.js"></script>
+  <script src="js/compress.js"></script>
 </body>
 </html>

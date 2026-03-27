@@ -6,6 +6,8 @@
   --clr-split-dark: #6fb5c8;
   --clr-rotate: #e8744f;
   --clr-rotate-dark: #d0603c;
+  --clr-compress: #7ecf9a;
+  --clr-compress-dark: #4ea76d;
   --clr-accent: #f5c652;
 }
 
@@ -82,6 +84,7 @@
 .tool-card[data-tool="merge"]  { background: var(--clr-merge); }
 .tool-card[data-tool="split"]  { background: var(--clr-split); }
 .tool-card[data-tool="rotate"] { background: var(--clr-rotate); }
+.tool-card[data-tool="compress"] { background: var(--clr-compress); }
 
 .tool-card-icon {
   width: 52px;
@@ -142,10 +145,12 @@
 #view-merge .view-title  { color: var(--clr-merge-dark); }
 #view-split .view-title  { color: var(--clr-split-dark); }
 #view-rotate .view-title { color: var(--clr-rotate-dark); }
+#view-compress .view-title { color: var(--clr-compress-dark); }
 
 [data-theme="dark"] #view-merge .view-title  { color: var(--clr-merge); }
 [data-theme="dark"] #view-split .view-title  { color: var(--clr-split); }
 [data-theme="dark"] #view-rotate .view-title { color: var(--clr-rotate); }
+[data-theme="dark"] #view-compress .view-title { color: var(--clr-compress); }
 
 .view-desc {
   color: var(--text-muted);
@@ -157,13 +162,147 @@
 #view-merge .btn-primary  { background: var(--clr-merge-dark); border-color: var(--clr-merge-dark); color: #141414; }
 #view-split .btn-primary  { background: var(--clr-split-dark); border-color: var(--clr-split-dark); color: #141414; }
 #view-rotate .btn-primary { background: var(--clr-rotate-dark); border-color: var(--clr-rotate-dark); color: #fff; }
+#view-compress .btn-primary { background: var(--clr-compress-dark); border-color: var(--clr-compress-dark); color: #fff; }
 
 #view-merge .btn-primary:hover  { background: var(--clr-merge);  border-color: var(--clr-merge); }
 #view-split .btn-primary:hover  { background: var(--clr-split);  border-color: var(--clr-split); }
 #view-rotate .btn-primary:hover { background: var(--clr-rotate); border-color: var(--clr-rotate); }
+#view-compress .btn-primary:hover { background: var(--clr-compress); border-color: var(--clr-compress); }
 
 .drop-zone.drag-over {
   background: rgba(245,198,82,.08);
+}
+
+#view-compress .drop-zone.drag-over {
+  background: rgba(126,207,154,.12);
+}
+
+/* ═══════════════════════════════════════════
+   COMPRESS TOOL
+   ═══════════════════════════════════════════ */
+.card-surface {
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.compress-workspace {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.compress-summary,
+.compress-panel {
+  padding: 1.25rem;
+}
+
+.compress-summary {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.compress-label,
+.compress-stat-label {
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.compress-file-name,
+.compress-heading {
+  font-size: 1.35rem;
+  font-weight: 900;
+  letter-spacing: -.03em;
+}
+
+.compress-stats-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.compress-note,
+.compress-preset-meta,
+.compress-result-note {
+  color: var(--text-muted);
+}
+
+.compress-note {
+  margin-top: .35rem;
+  max-width: 58ch;
+}
+
+.compress-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem;
+  margin-top: 1rem;
+}
+
+#view-compress .compress-preset.btn-active {
+  background: var(--clr-compress-dark);
+  border-color: var(--clr-compress-dark);
+  color: #fff;
+}
+
+#view-compress .compress-preset.btn-active:hover {
+  background: var(--clr-compress);
+  border-color: var(--clr-compress);
+}
+
+.compress-preset-meta {
+  margin-top: .85rem;
+  min-height: 1.55rem;
+  font-size: .94rem;
+}
+
+.compress-actions {
+  margin-top: 1.1rem;
+  justify-content: flex-start;
+}
+
+.compress-result-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .85rem;
+  margin: 1rem 0;
+}
+
+.compress-stat {
+  padding: 1rem;
+}
+
+.compress-stat strong {
+  display: block;
+  margin-top: .25rem;
+  font-size: 1.2rem;
+  letter-spacing: -.02em;
+}
+
+.compress-result-note {
+  margin-bottom: 1rem;
+}
+
+[data-theme="dark"] .card-surface {
+  box-shadow: none;
+}
+
+@media (max-width: 760px) {
+  .compress-summary {
+    flex-direction: column;
+  }
+
+  .compress-result-stats {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ═══════════════════════════════════════════
