@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text-to-Speech - Clientemente</title>
+    <link rel="stylesheet" href="../shared/css/base.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container site-header__inner">
+            <a href="../index.html" class="site-header__logo">Clientemente</a>
+            <span class="site-header__tagline">100% client-side</span>
+            <button id="theme-toggle" class="btn btn--sm" aria-label="Toggle theme">🌙</button>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Back link -->
+        <a href="../index.html" class="back-btn" style="margin-bottom:1.5rem;display:inline-flex;align-items:center;gap:.4rem;color:var(--text-muted);text-decoration:none;font-size:.9rem;">
+            ← Back to Tools
+        </a>
+
+        <!-- Hero -->
+        <section class="hero-section">
+            <div class="hero-text">
+                <h2>Text-to-Speech</h2>
+                <p>Paste any text and listen to it using <strong>Voxtral 4B TTS</strong>, a state-of-the-art text-to-speech model running entirely in your browser via WebGPU. 20 voices across 9 languages. No server, no API key — just your GPU.</p>
+            </div>
+            <div class="status-card">
+                <div class="status-row">
+                    <div class="status-dot" id="status-dot"></div>
+                    <span class="status-text" id="status-text">Checking WebGPU support...</span>
+                </div>
+                <div class="progress-bar" id="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TTS workspace -->
+        <div class="tts-container">
+
+            <!-- Text input -->
+            <div class="input-card">
+                <div class="input-card__header">
+                    <span class="input-card__title">Text</span>
+                    <span class="char-count" id="char-count">0 characters</span>
+                </div>
+                <textarea
+                    id="text-input"
+                    class="tts-textarea"
+                    placeholder="Paste or type text here to convert to speech..."
+                    disabled
+                >The quick brown fox jumps over the lazy dog.</textarea>
+
+                <div class="controls-row">
+                    <select id="voice-select" class="voice-select" disabled>
+                        <optgroup label="English">
+                            <option value="casual_female">Casual Female</option>
+                            <option value="casual_male">Casual Male</option>
+                            <option value="neutral_female">Neutral Female</option>
+                            <option value="neutral_male">Neutral Male</option>
+                            <option value="cheerful_female">Cheerful Female</option>
+                        </optgroup>
+                        <optgroup label="French">
+                            <option value="fr_female">French Female</option>
+                            <option value="fr_male">French Male</option>
+                        </optgroup>
+                        <optgroup label="German">
+                            <option value="de_female">German Female</option>
+                            <option value="de_male">German Male</option>
+                        </optgroup>
+                        <optgroup label="Spanish">
+                            <option value="es_female">Spanish Female</option>
+                            <option value="es_male">Spanish Male</option>
+                        </optgroup>
+                        <optgroup label="Italian">
+                            <option value="it_female">Italian Female</option>
+                            <option value="it_male">Italian Male</option>
+                        </optgroup>
+                        <optgroup label="Portuguese">
+                            <option value="pt_female">Portuguese Female</option>
+                            <option value="pt_male">Portuguese Male</option>
+                        </optgroup>
+                        <optgroup label="Dutch">
+                            <option value="nl_female">Dutch Female</option>
+                            <option value="nl_male">Dutch Male</option>
+                        </optgroup>
+                        <optgroup label="Hindi">
+                            <option value="hi_female">Hindi Female</option>
+                            <option value="hi_male">Hindi Male</option>
+                        </optgroup>
+                        <optgroup label="Arabic">
+                            <option value="ar_male">Arabic Male</option>
+                        </optgroup>
+                    </select>
+                    <button id="speak-btn" class="btn-speak" disabled>🔊 Speak</button>
+                    <button id="clear-btn" class="btn-clear">Clear</button>
+                </div>
+            </div>
+
+            <!-- Audio output -->
+            <div class="output-card hidden" id="output-card">
+                <div class="output-card__title">Output</div>
+                <audio id="audio-player" class="audio-player" controls></audio>
+                <div class="audio-meta">
+                    <span id="audio-duration"></span>
+                    <span id="audio-samples"></span>
+                    <span id="audio-timing"></span>
+                </div>
+                <div class="output-actions">
+                    <button id="download-btn" class="btn btn--sm">⬇ Download WAV</button>
+                </div>
+            </div>
+
+            <!-- Model management -->
+            <div class="model-card">
+                <div class="model-card__title">Model</div>
+                <div class="model-actions">
+                    <button id="load-btn" class="btn btn--sm btn--primary" disabled>Load Model (~2.7 GB)</button>
+                    <button id="clear-cache-btn" class="btn btn--sm">Clear Cache</button>
+                </div>
+                <div class="cache-info" id="cache-info"></div>
+                <p class="cache-info" style="margin-top:0.5rem;">
+                    Q4 GGUF weights from
+                    <a class="model-link" href="https://huggingface.co/TrevorJS/voxtral-tts-q4-gguf" target="_blank" rel="noopener">TrevorJS/voxtral-tts-q4-gguf</a>.
+                    Requires a <strong>WebGPU-capable browser</strong> (Chrome 113+, Edge 113+).
+                </p>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Clientemente. Open source and local-first.</p>
+        </div>
+    </footer>
+
+    <script src="../shared/js/core.js"></script>
+    <script src="js/tts.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

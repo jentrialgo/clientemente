@@ -108,6 +108,10 @@ body {
     --card-accent: #e21b3c;
 }
 
+.tool-card--tts {
+    --card-accent: #c9a0dc;
+}
+
 .tool-card__icon {
     font-size: 2.5rem;
     margin-bottom: 1.5rem;
