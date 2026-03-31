@@ -53,6 +53,31 @@ const App = (() => {
     if (wsBar) wsBar.classList.add('hidden');
   }
 
+  function showWorkspaceError(msg) {
+    const el = $('ws-error');
+    const dot = $('status-dot');
+    if (el) {
+      $('ws-error-msg').textContent = msg;
+      el.classList.remove('hidden');
+    }
+    if (dot) {
+      dot.classList.remove('ready', 'loading');
+      dot.classList.add('error');
+    }
+    $('ws-status').textContent = 'Error';
+  }
+
+  function hideWorkspaceError() {
+    const el = $('ws-error');
+    const dot = $('status-dot');
+    if (el) el.classList.add('hidden');
+    if (dot) {
+      dot.classList.remove('error');
+      dot.classList.add('ready');
+    }
+    $('ws-status').textContent = 'Ready';
+  }
+
   function updateCharCount() {
     const len = $('text-input').value.length;
     $('char-count').textContent = len + ' chars';
@@ -178,7 +203,7 @@ const App = (() => {
       $('audio-timing').textContent = `${elapsed}s · RTF ${rtf}x`;
     } catch (e) {
       hideProgress();
-      $('ws-status').textContent = 'Synthesis failed';
+      showWorkspaceError(e.message || 'Synthesis failed');
     } finally {
       setSpeakBusy(false);
     }
@@ -232,7 +257,15 @@ const App = (() => {
     SharedCore.initTheme(document.getElementById('theme-toggle'));
 
     VoxtralTTS.setOnProgress((stage, percent) => showProgress(stage, percent));
-    VoxtralTTS.setOnError((msg) => { hideProgress(); showOnboardingError(msg); });
+    VoxtralTTS.setOnError((msg) => {
+      hideProgress();
+      if (modelLoaded) {
+        showWorkspaceError(msg);
+        setSpeakBusy(false);
+      } else {
+        showOnboardingError(msg);
+      }
+    });
 
     // Onboarding
     $('load-btn').addEventListener('click', loadModel);
@@ -243,6 +276,7 @@ const App = (() => {
     $('download-btn').addEventListener('click', downloadWav);
     $('clear-cache-btn').addEventListener('click', clearCacheAction);
     $('text-input').addEventListener('input', updateCharCount);
+    $('ws-error-close').addEventListener('click', hideWorkspaceError);
 
     // Voice pills
     document.querySelectorAll('.voice-pill').forEach(pill => {

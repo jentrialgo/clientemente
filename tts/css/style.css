@@ -202,6 +202,40 @@
 .status-dot.loading { background: #ff9800; animation: pulse 1s infinite; }
 .status-dot.error { background: var(--clr-danger); }
 
+/* ── Workspace error banner ── */
+.ws-error {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.7rem 1rem;
+    background: color-mix(in srgb, var(--clr-danger) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--clr-danger) 35%, transparent);
+    border-radius: var(--radius);
+    margin-bottom: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--text);
+}
+
+.ws-error__icon {
+    flex-shrink: 0;
+}
+
+.ws-error__msg {
+    flex: 1;
+    word-break: break-word;
+}
+
+.ws-error__close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0 0.2rem;
+    line-height: 1;
+}
+.ws-error__close:hover { color: var(--text); }
+
 .status-bar__text {
     font-size: 0.8rem;
     color: var(--text-muted);

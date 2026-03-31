@@ -59,10 +59,17 @@
         <!-- ─── Main workspace (shown after model is loaded) ─── -->
         <div class="workspace hidden" id="workspace">
 
+            <!-- Error banner (hidden by default) -->
+            <div class="ws-error hidden" id="ws-error">
+                <span class="ws-error__icon">⚠️</span>
+                <span class="ws-error__msg" id="ws-error-msg"></span>
+                <button class="ws-error__close" id="ws-error-close" aria-label="Dismiss">&times;</button>
+            </div>
+
             <!-- Compact status bar -->
             <div class="status-bar">
                 <div class="status-bar__left">
-                    <span class="status-dot ready"></span>
+                    <span class="status-dot ready" id="status-dot"></span>
                     <span class="status-bar__text" id="ws-status">Ready</span>
                 </div>
                 <div class="status-bar__progress hidden" id="ws-progress">

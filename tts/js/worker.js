@@ -27,6 +27,16 @@ let wasm = null;
 let tts = null;
 let tokenizer = null;
 
+// Catch WASM panics and other unhandled errors/rejections so
+// they propagate back to the main thread instead of silently dying.
+self.addEventListener('error', (e) => {
+  self.postMessage({ type: 'error', message: e.message || 'Unexpected worker error' });
+});
+self.addEventListener('unhandledrejection', (e) => {
+  const msg = e.reason?.message || String(e.reason) || 'Unhandled worker error';
+  self.postMessage({ type: 'error', message: msg });
+});
+
 self.onmessage = async (e) => {
   const { type, ...data } = e.data;
   try {

@@ -71,8 +71,12 @@ const VoxtralTTS = (() => {
       worker = new Worker('./js/worker.js', { type: 'module' });
       worker.onmessage = (e) => handleMessage(e.data);
       worker.onerror = (e) => {
-        if (onError) onError(e.message);
-        reject(e);
+        const msg = e.message || 'Worker crashed unexpectedly';
+        if (pending) {
+          pending.reject(new Error(msg));
+          pending = null;
+        }
+        if (onError) onError(msg);
       };
       pending = { resolve, reject };
       worker.postMessage({ type: 'init' });
