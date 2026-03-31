@@ -20,119 +20,185 @@
     </header>
 
     <main class="container">
-        <!-- Back link -->
-        <a href="../index.html" class="back-btn" style="margin-bottom:1.5rem;display:inline-flex;align-items:center;gap:.4rem;color:var(--text-muted);text-decoration:none;font-size:.9rem;">
+        <a href="../index.html" class="back-btn" style="margin-bottom:1rem;display:inline-flex;align-items:center;gap:.4rem;color:var(--text-muted);text-decoration:none;font-size:.9rem;">
             ← Back to Tools
         </a>
 
-        <!-- Hero -->
-        <section class="hero-section">
-            <div class="hero-text">
-                <h2>Text-to-Speech</h2>
-                <p>Paste any text and listen to it using <strong>Voxtral 4B TTS</strong>, a state-of-the-art text-to-speech model running entirely in your browser via WebGPU. 20 voices across 9 languages. No server, no API key — just your GPU.</p>
-            </div>
-            <div class="status-card">
-                <div class="status-row">
-                    <div class="status-dot" id="status-dot"></div>
-                    <span class="status-text" id="status-text">Checking WebGPU support...</span>
+        <!-- ─── Onboarding overlay (shown until model is loaded) ─── -->
+        <div class="onboarding" id="onboarding">
+            <div class="onboarding__card">
+                <div class="onboarding__icon">🔊</div>
+                <h2 class="onboarding__title">Text-to-Speech</h2>
+                <p class="onboarding__desc">
+                    Runs <strong>Voxtral 4B</strong> entirely in your browser via WebGPU.<br>
+                    20 voices · 9 languages · No server required.
+                </p>
+
+                <!-- Step indicators -->
+                <div class="steps" id="steps">
+                    <div class="step active" data-step="1"><span class="step__num">1</span> Initialize</div>
+                    <div class="step" data-step="2"><span class="step__num">2</span> Download</div>
+                    <div class="step" data-step="3"><span class="step__num">3</span> Ready</div>
                 </div>
+
                 <div class="progress-bar" id="progress-bar">
                     <div class="progress-fill" id="progress-fill"></div>
                 </div>
+
+                <p class="onboarding__status" id="status-text">Checking WebGPU support...</p>
+
+                <button class="onboarding__btn" id="load-btn" disabled>
+                    Download Model
+                    <span class="onboarding__btn-sub">~2.7 GB · cached after first use</span>
+                </button>
+
+                <p class="onboarding__error hidden" id="error-msg"></p>
             </div>
-        </section>
+        </div>
 
-        <!-- TTS workspace -->
-        <div class="tts-container">
+        <!-- ─── Main workspace (shown after model is loaded) ─── -->
+        <div class="workspace hidden" id="workspace">
 
-            <!-- Text input -->
-            <div class="input-card">
-                <div class="input-card__header">
-                    <span class="input-card__title">Text</span>
-                    <span class="char-count" id="char-count">0 characters</span>
+            <!-- Compact status bar -->
+            <div class="status-bar">
+                <div class="status-bar__left">
+                    <span class="status-dot ready"></span>
+                    <span class="status-bar__text" id="ws-status">Ready</span>
                 </div>
-                <textarea
-                    id="text-input"
-                    class="tts-textarea"
-                    placeholder="Paste or type text here to convert to speech..."
-                    disabled
-                >The quick brown fox jumps over the lazy dog.</textarea>
-
-                <div class="controls-row">
-                    <select id="voice-select" class="voice-select" disabled>
-                        <optgroup label="English">
-                            <option value="casual_female">Casual Female</option>
-                            <option value="casual_male">Casual Male</option>
-                            <option value="neutral_female">Neutral Female</option>
-                            <option value="neutral_male">Neutral Male</option>
-                            <option value="cheerful_female">Cheerful Female</option>
-                        </optgroup>
-                        <optgroup label="French">
-                            <option value="fr_female">French Female</option>
-                            <option value="fr_male">French Male</option>
-                        </optgroup>
-                        <optgroup label="German">
-                            <option value="de_female">German Female</option>
-                            <option value="de_male">German Male</option>
-                        </optgroup>
-                        <optgroup label="Spanish">
-                            <option value="es_female">Spanish Female</option>
-                            <option value="es_male">Spanish Male</option>
-                        </optgroup>
-                        <optgroup label="Italian">
-                            <option value="it_female">Italian Female</option>
-                            <option value="it_male">Italian Male</option>
-                        </optgroup>
-                        <optgroup label="Portuguese">
-                            <option value="pt_female">Portuguese Female</option>
-                            <option value="pt_male">Portuguese Male</option>
-                        </optgroup>
-                        <optgroup label="Dutch">
-                            <option value="nl_female">Dutch Female</option>
-                            <option value="nl_male">Dutch Male</option>
-                        </optgroup>
-                        <optgroup label="Hindi">
-                            <option value="hi_female">Hindi Female</option>
-                            <option value="hi_male">Hindi Male</option>
-                        </optgroup>
-                        <optgroup label="Arabic">
-                            <option value="ar_male">Arabic Male</option>
-                        </optgroup>
-                    </select>
-                    <button id="speak-btn" class="btn-speak" disabled>🔊 Speak</button>
-                    <button id="clear-btn" class="btn-clear">Clear</button>
+                <div class="status-bar__progress hidden" id="ws-progress">
+                    <div class="progress-bar active">
+                        <div class="progress-fill" id="ws-progress-fill"></div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Audio output -->
-            <div class="output-card hidden" id="output-card">
-                <div class="output-card__title">Output</div>
-                <audio id="audio-player" class="audio-player" controls></audio>
-                <div class="audio-meta">
-                    <span id="audio-duration"></span>
-                    <span id="audio-samples"></span>
-                    <span id="audio-timing"></span>
+            <!-- Two-column layout -->
+            <div class="workspace__grid">
+
+                <!-- Left: Input -->
+                <div class="panel panel--input">
+                    <div class="panel__header">
+                        <span class="panel__label">Text</span>
+                        <span class="char-count" id="char-count">0 chars</span>
+                    </div>
+                    <textarea
+                        id="text-input"
+                        class="tts-textarea"
+                        placeholder="Paste or type text here..."
+                    ></textarea>
+
+                    <!-- Sample texts -->
+                    <div class="samples">
+                        <span class="samples__label">Try:</span>
+                        <button class="sample-chip" data-text="The quick brown fox jumps over the lazy dog." data-voice="casual_female">🇬🇧 English</button>
+                        <button class="sample-chip" data-text="Bonjour, comment allez-vous aujourd'hui?" data-voice="fr_female">🇫🇷 French</button>
+                        <button class="sample-chip" data-text="Hallo, wie geht es Ihnen heute?" data-voice="de_female">🇩🇪 German</button>
+                        <button class="sample-chip" data-text="Hola, ¿cómo estás hoy?" data-voice="es_female">🇪🇸 Spanish</button>
+                        <button class="sample-chip" data-text="Ciao, come stai oggi?" data-voice="it_female">🇮🇹 Italian</button>
+                        <button class="sample-chip" data-text="Olá, como você está hoje?" data-voice="pt_female">🇧🇷 Portuguese</button>
+                    </div>
+
+                    <!-- Voice picker -->
+                    <div class="voice-picker" id="voice-picker">
+                        <span class="panel__label">Voice</span>
+                        <div class="voice-groups">
+                            <div class="voice-group" data-lang="en">
+                                <span class="voice-group__flag">🇬🇧</span>
+                                <button class="voice-pill active" data-voice="casual_female">Casual ♀</button>
+                                <button class="voice-pill" data-voice="casual_male">Casual ♂</button>
+                                <button class="voice-pill" data-voice="neutral_female">Neutral ♀</button>
+                                <button class="voice-pill" data-voice="neutral_male">Neutral ♂</button>
+                                <button class="voice-pill" data-voice="cheerful_female">Cheerful ♀</button>
+                            </div>
+                            <div class="voice-group" data-lang="fr">
+                                <span class="voice-group__flag">🇫🇷</span>
+                                <button class="voice-pill" data-voice="fr_female">Female</button>
+                                <button class="voice-pill" data-voice="fr_male">Male</button>
+                            </div>
+                            <div class="voice-group" data-lang="de">
+                                <span class="voice-group__flag">🇩🇪</span>
+                                <button class="voice-pill" data-voice="de_female">Female</button>
+                                <button class="voice-pill" data-voice="de_male">Male</button>
+                            </div>
+                            <div class="voice-group" data-lang="es">
+                                <span class="voice-group__flag">🇪🇸</span>
+                                <button class="voice-pill" data-voice="es_female">Female</button>
+                                <button class="voice-pill" data-voice="es_male">Male</button>
+                            </div>
+                            <div class="voice-group" data-lang="it">
+                                <span class="voice-group__flag">🇮🇹</span>
+                                <button class="voice-pill" data-voice="it_female">Female</button>
+                                <button class="voice-pill" data-voice="it_male">Male</button>
+                            </div>
+                            <div class="voice-group" data-lang="pt">
+                                <span class="voice-group__flag">🇧🇷</span>
+                                <button class="voice-pill" data-voice="pt_female">Female</button>
+                                <button class="voice-pill" data-voice="pt_male">Male</button>
+                            </div>
+                            <div class="voice-group" data-lang="nl">
+                                <span class="voice-group__flag">🇳🇱</span>
+                                <button class="voice-pill" data-voice="nl_female">Female</button>
+                                <button class="voice-pill" data-voice="nl_male">Male</button>
+                            </div>
+                            <div class="voice-group" data-lang="hi">
+                                <span class="voice-group__flag">🇮🇳</span>
+                                <button class="voice-pill" data-voice="hi_female">Female</button>
+                                <button class="voice-pill" data-voice="hi_male">Male</button>
+                            </div>
+                            <div class="voice-group" data-lang="ar">
+                                <span class="voice-group__flag">🇸🇦</span>
+                                <button class="voice-pill" data-voice="ar_male">Male</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Primary actions -->
+                    <div class="actions-row">
+                        <button class="btn-speak" id="speak-btn">
+                            <span class="btn-speak__idle">🔊 Speak</span>
+                            <span class="btn-speak__busy hidden">
+                                <span class="spinner"></span> Generating...
+                            </span>
+                        </button>
+                        <button class="btn-clear" id="clear-btn">Clear</button>
+                    </div>
                 </div>
-                <div class="output-actions">
-                    <button id="download-btn" class="btn btn--sm">⬇ Download WAV</button>
+
+                <!-- Right: Output -->
+                <div class="panel panel--output">
+                    <div class="panel__header">
+                        <span class="panel__label">Output</span>
+                        <button class="btn-download hidden" id="download-btn">⬇ Download WAV</button>
+                    </div>
+
+                    <!-- Placeholder before first synthesis -->
+                    <div class="output-placeholder" id="output-placeholder">
+                        <div class="output-placeholder__icon">🎧</div>
+                        <p>Type or paste text, pick a voice, and press <strong>Speak</strong>.</p>
+                    </div>
+
+                    <!-- Audio player (shown after synthesis) -->
+                    <div class="output-result hidden" id="output-result">
+                        <audio id="audio-player" class="audio-player" controls></audio>
+                        <div class="audio-meta">
+                            <span id="audio-duration"></span>
+                            <span id="audio-timing"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Model management -->
-            <div class="model-card">
-                <div class="model-card__title">Model</div>
-                <div class="model-actions">
-                    <button id="load-btn" class="btn btn--sm btn--primary" disabled>Load Model (~2.7 GB)</button>
-                    <button id="clear-cache-btn" class="btn btn--sm">Clear Cache</button>
+            <!-- Collapsed model details -->
+            <details class="model-details">
+                <summary class="model-details__toggle">Model info & cache</summary>
+                <div class="model-details__body">
+                    <span class="model-details__info" id="cache-info"></span>
+                    <button class="btn btn--sm" id="clear-cache-btn">Clear Cache</button>
+                    <a class="model-link" href="https://huggingface.co/TrevorJS/voxtral-tts-q4-gguf" target="_blank" rel="noopener">
+                        Voxtral TTS Q4 GGUF on HuggingFace
+                    </a>
                 </div>
-                <div class="cache-info" id="cache-info"></div>
-                <p class="cache-info" style="margin-top:0.5rem;">
-                    Q4 GGUF weights from
-                    <a class="model-link" href="https://huggingface.co/TrevorJS/voxtral-tts-q4-gguf" target="_blank" rel="noopener">TrevorJS/voxtral-tts-q4-gguf</a>.
-                    Requires a <strong>WebGPU-capable browser</strong> (Chrome 113+, Edge 113+).
-                </p>
-            </div>
-
+            </details>
         </div>
     </main>
 

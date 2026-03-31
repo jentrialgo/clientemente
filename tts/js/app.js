@@ -1,76 +1,140 @@
 const App = (() => {
   'use strict';
 
-  // ── DOM refs ──
   const $ = (id) => document.getElementById(id);
 
   let modelLoaded = false;
   let currentVoice = null;
+  let selectedVoice = 'casual_female';
   let lastWavBlob = null;
 
-  // ── Status helpers ──
-  function setStatus(state, text) {
-    $('status-dot').className = 'status-dot ' + state;
+  // ── Onboarding helpers ──
+
+  function setStep(num) {
+    document.querySelectorAll('.step').forEach(s => {
+      const n = parseInt(s.dataset.step);
+      s.classList.toggle('active', n === num);
+      s.classList.toggle('done', n < num);
+    });
+  }
+
+  function setOnboardingStatus(text) {
     $('status-text').textContent = text;
   }
 
+  function showOnboardingError(msg) {
+    const el = $('error-msg');
+    el.textContent = msg;
+    el.classList.remove('hidden');
+  }
+
   function showProgress(stage, percent) {
-    $('progress-bar').classList.add('active');
-    if (percent != null) $('progress-fill').style.width = percent + '%';
-    setStatus('loading', stage);
+    // Onboarding progress
+    const bar = $('progress-bar');
+    const fill = $('progress-fill');
+    bar.classList.add('active');
+    if (percent != null) fill.style.width = percent + '%';
+    setOnboardingStatus(stage);
+
+    // Workspace progress
+    const wsBar = $('ws-progress');
+    const wsFill = $('ws-progress-fill');
+    if (wsBar) {
+      wsBar.classList.remove('hidden');
+      if (percent != null) wsFill.style.width = percent + '%';
+      $('ws-status').textContent = stage;
+    }
   }
 
   function hideProgress() {
     $('progress-bar').classList.remove('active');
     $('progress-fill').style.width = '0%';
+    const wsBar = $('ws-progress');
+    if (wsBar) wsBar.classList.add('hidden');
   }
 
   function updateCharCount() {
     const len = $('text-input').value.length;
-    $('char-count').textContent = len + ' characters';
+    $('char-count').textContent = len + ' chars';
+  }
+
+  // ── Transition to workspace ──
+
+  function showWorkspace() {
+    $('onboarding').classList.add('hidden');
+    $('workspace').classList.remove('hidden');
+    $('ws-status').textContent = 'Ready';
+    updateCharCount();
+    updateCacheInfo();
+  }
+
+  async function updateCacheInfo() {
+    const cache = await VoxtralTTS.checkCache();
+    $('cache-info').textContent = `${cache.shardsCached}/${cache.shardsTotal} shards cached`;
   }
 
   // ── Core flow ──
 
   async function initWorker() {
     if (!navigator.gpu) {
-      setStatus('error', 'WebGPU is not supported in this browser. Try Chrome 113+ or Edge 113+.');
+      setOnboardingStatus('');
+      showOnboardingError('WebGPU is not supported in this browser. Try Chrome 113+ or Edge 113+.');
       return;
     }
 
-    setStatus('loading', 'Initializing WebGPU...');
+    setStep(1);
+    setOnboardingStatus('Initializing WebGPU...');
     try {
       await VoxtralTTS.init();
-      setStatus('ready', 'Ready — load model to begin');
-      $('load-btn').disabled = false;
+      setStep(1);
 
+      // Check if model is already cached → auto-load
       const cache = await VoxtralTTS.checkCache();
       if (cache.cached) {
-        $('cache-info').textContent = `${cache.shardsCached}/${cache.shardsTotal} shards cached`;
-      } else if (cache.shardsCached > 0) {
-        $('cache-info').textContent = `${cache.shardsCached}/${cache.shardsTotal} shards cached`;
+        setOnboardingStatus('Model cached — loading...');
+        $('load-btn').disabled = true;
+        $('load-btn').querySelector('.onboarding__btn-sub').textContent = 'Loading from cache...';
+        await autoLoad();
+      } else {
+        setOnboardingStatus('Ready to download');
+        $('load-btn').disabled = false;
+        if (cache.shardsCached > 0) {
+          $('load-btn').querySelector('.onboarding__btn-sub').textContent =
+            `${cache.shardsCached}/${cache.shardsTotal} shards cached · resumes where it left off`;
+        }
       }
     } catch (e) {
-      setStatus('error', 'Failed to initialize: ' + e.message);
+      showOnboardingError('Failed to initialize: ' + e.message);
+    }
+  }
+
+  async function autoLoad() {
+    setStep(2);
+    try {
+      await VoxtralTTS.loadModel();
+      hideProgress();
+      setStep(3);
+      modelLoaded = true;
+      setTimeout(showWorkspace, 600);
+    } catch (e) {
+      showOnboardingError('Load failed: ' + e.message);
+      $('load-btn').disabled = false;
     }
   }
 
   async function loadModel() {
     $('load-btn').disabled = true;
+    setStep(2);
     try {
       await VoxtralTTS.loadModel();
       hideProgress();
-      setStatus('ready', 'Model loaded — paste text and speak');
+      setStep(3);
+      setOnboardingStatus('Model loaded!');
       modelLoaded = true;
-      $('text-input').disabled = false;
-      $('voice-select').disabled = false;
-      $('speak-btn').disabled = false;
-
-      const cache = await VoxtralTTS.checkCache();
-      $('cache-info').textContent = `${cache.shardsCached}/${cache.shardsTotal} shards cached`;
+      setTimeout(showWorkspace, 600);
     } catch (e) {
       hideProgress();
-      setStatus('error', 'Load failed: ' + e.message);
+      showOnboardingError('Download failed: ' + e.message);
       $('load-btn').disabled = false;
     }
   }
@@ -79,22 +143,19 @@ const App = (() => {
     const text = $('text-input').value.trim();
     if (!text) return;
 
-    $('speak-btn').disabled = true;
-    const voice = $('voice-select').value;
+    setSpeakBusy(true);
 
     try {
       // Load voice if changed
-      if (voice !== currentVoice) {
-        showProgress(`Loading voice "${voice}"...`, null);
-        await VoxtralTTS.loadVoice(voice);
-        currentVoice = voice;
+      if (selectedVoice !== currentVoice) {
+        showProgress(`Loading voice...`, null);
+        await VoxtralTTS.loadVoice(selectedVoice);
+        currentVoice = selectedVoice;
       }
 
-      // Tokenize via WASM Tekken BPE
       showProgress('Tokenizing...', null);
       const tokenIds = await VoxtralTTS.tokenize(text);
 
-      // Synthesize
       const maxFrames = Math.min(2000, Math.max(50, tokenIds.length * 30));
       showProgress('Synthesizing speech...', null);
       const t0 = performance.now();
@@ -104,22 +165,30 @@ const App = (() => {
       const rtf = (parseFloat(elapsed) / parseFloat(duration)).toFixed(1);
 
       hideProgress();
-      setStatus('ready', 'Done — play or download the audio');
+      $('ws-status').textContent = 'Done';
 
-      // Create WAV and play
+      // Show result
       lastWavBlob = VoxtralTTS.samplesToWavBlob(samples, sampleRate);
       const url = URL.createObjectURL(lastWavBlob);
       $('audio-player').src = url;
-      $('output-card').classList.remove('hidden');
+      $('output-placeholder').classList.add('hidden');
+      $('output-result').classList.remove('hidden');
+      $('download-btn').classList.remove('hidden');
       $('audio-duration').textContent = `${duration}s @ ${sampleRate / 1000} kHz`;
-      $('audio-samples').textContent = `${samples.length.toLocaleString()} samples`;
-      $('audio-timing').textContent = `Generated in ${elapsed}s · RTF ${rtf}x`;
+      $('audio-timing').textContent = `${elapsed}s · RTF ${rtf}x`;
     } catch (e) {
       hideProgress();
-      setStatus('error', 'Synthesis failed: ' + e.message);
+      $('ws-status').textContent = 'Synthesis failed';
     } finally {
-      $('speak-btn').disabled = !modelLoaded;
+      setSpeakBusy(false);
     }
+  }
+
+  function setSpeakBusy(busy) {
+    const btn = $('speak-btn');
+    btn.disabled = busy;
+    btn.querySelector('.btn-speak__idle').classList.toggle('hidden', busy);
+    btn.querySelector('.btn-speak__busy').classList.toggle('hidden', !busy);
   }
 
   function downloadWav() {
@@ -140,24 +209,51 @@ const App = (() => {
     $('cache-info').textContent = 'Cache cleared';
   }
 
+  // ── Voice picker ──
+
+  function selectVoice(voiceName) {
+    selectedVoice = voiceName;
+    document.querySelectorAll('.voice-pill').forEach(p => {
+      p.classList.toggle('active', p.dataset.voice === voiceName);
+    });
+  }
+
+  // ── Sample chips ──
+
+  function applySample(text, voice) {
+    $('text-input').value = text;
+    updateCharCount();
+    if (voice) selectVoice(voice);
+  }
+
   // ── Init ──
 
   function init() {
     SharedCore.initTheme(document.getElementById('theme-toggle'));
 
-    // Wire callbacks
     VoxtralTTS.setOnProgress((stage, percent) => showProgress(stage, percent));
-    VoxtralTTS.setOnError((msg) => { hideProgress(); setStatus('error', msg); });
+    VoxtralTTS.setOnError((msg) => { hideProgress(); showOnboardingError(msg); });
 
-    // Wire UI events
+    // Onboarding
     $('load-btn').addEventListener('click', loadModel);
+
+    // Workspace events
     $('speak-btn').addEventListener('click', speak);
     $('clear-btn').addEventListener('click', clearText);
     $('download-btn').addEventListener('click', downloadWav);
     $('clear-cache-btn').addEventListener('click', clearCacheAction);
     $('text-input').addEventListener('input', updateCharCount);
 
-    updateCharCount();
+    // Voice pills
+    document.querySelectorAll('.voice-pill').forEach(pill => {
+      pill.addEventListener('click', () => selectVoice(pill.dataset.voice));
+    });
+
+    // Sample chips
+    document.querySelectorAll('.sample-chip').forEach(chip => {
+      chip.addEventListener('click', () => applySample(chip.dataset.text, chip.dataset.voice));
+    });
+
     initWorker();
   }
 
