@@ -97,12 +97,12 @@
                     <!-- Sample texts -->
                     <div class="samples">
                         <span class="samples__label">Try:</span>
-                        <button class="sample-chip" data-text="The quick brown fox jumps over the lazy dog." data-voice="casual_female">🇬🇧 English</button>
-                        <button class="sample-chip" data-text="Bonjour, comment allez-vous aujourd'hui?" data-voice="fr_female">🇫🇷 French</button>
-                        <button class="sample-chip" data-text="Hallo, wie geht es Ihnen heute?" data-voice="de_female">🇩🇪 German</button>
-                        <button class="sample-chip" data-text="Hola, ¿cómo estás hoy?" data-voice="es_female">🇪🇸 Spanish</button>
-                        <button class="sample-chip" data-text="Ciao, come stai oggi?" data-voice="it_female">🇮🇹 Italian</button>
-                        <button class="sample-chip" data-text="Olá, como você está hoje?" data-voice="pt_female">🇧🇷 Portuguese</button>
+                        <button class="sample-chip" data-text="The quick brown fox jumps over the lazy dog." data-voice="casual_female">🇬🇧 EN</button>
+                        <button class="sample-chip" data-text="Bonjour, comment allez-vous aujourd'hui?" data-voice="fr_female">🇫🇷 FR</button>
+                        <button class="sample-chip" data-text="Hallo, wie geht es Ihnen heute?" data-voice="de_female">🇩🇪 DE</button>
+                        <button class="sample-chip" data-text="Hola, ¿cómo estás hoy?" data-voice="es_female">🇪🇸 ES</button>
+                        <button class="sample-chip" data-text="Ciao, come stai oggi?" data-voice="it_female">🇮🇹 IT</button>
+                        <button class="sample-chip" data-text="Olá, como você está hoje?" data-voice="pt_female">🇧🇷 PT</button>
                     </div>
 
                     <!-- Voice picker -->
@@ -110,7 +110,7 @@
                         <span class="panel__label">Voice</span>
                         <div class="voice-groups">
                             <div class="voice-group" data-lang="en">
-                                <span class="voice-group__flag">🇬🇧</span>
+                                <span class="voice-group__flag">🇬🇧</span><span class="voice-group__code">EN</span>
                                 <button class="voice-pill active" data-voice="casual_female">Casual ♀</button>
                                 <button class="voice-pill" data-voice="casual_male">Casual ♂</button>
                                 <button class="voice-pill" data-voice="neutral_female">Neutral ♀</button>
@@ -118,42 +118,42 @@
                                 <button class="voice-pill" data-voice="cheerful_female">Cheerful ♀</button>
                             </div>
                             <div class="voice-group" data-lang="fr">
-                                <span class="voice-group__flag">🇫🇷</span>
+                                <span class="voice-group__flag">🇫🇷</span><span class="voice-group__code">FR</span>
                                 <button class="voice-pill" data-voice="fr_female">Female</button>
                                 <button class="voice-pill" data-voice="fr_male">Male</button>
                             </div>
                             <div class="voice-group" data-lang="de">
-                                <span class="voice-group__flag">🇩🇪</span>
+                                <span class="voice-group__flag">🇩🇪</span><span class="voice-group__code">DE</span>
                                 <button class="voice-pill" data-voice="de_female">Female</button>
                                 <button class="voice-pill" data-voice="de_male">Male</button>
                             </div>
                             <div class="voice-group" data-lang="es">
-                                <span class="voice-group__flag">🇪🇸</span>
+                                <span class="voice-group__flag">🇪🇸</span><span class="voice-group__code">ES</span>
                                 <button class="voice-pill" data-voice="es_female">Female</button>
                                 <button class="voice-pill" data-voice="es_male">Male</button>
                             </div>
                             <div class="voice-group" data-lang="it">
-                                <span class="voice-group__flag">🇮🇹</span>
+                                <span class="voice-group__flag">🇮🇹</span><span class="voice-group__code">IT</span>
                                 <button class="voice-pill" data-voice="it_female">Female</button>
                                 <button class="voice-pill" data-voice="it_male">Male</button>
                             </div>
                             <div class="voice-group" data-lang="pt">
-                                <span class="voice-group__flag">🇧🇷</span>
+                                <span class="voice-group__flag">🇧🇷</span><span class="voice-group__code">PT</span>
                                 <button class="voice-pill" data-voice="pt_female">Female</button>
                                 <button class="voice-pill" data-voice="pt_male">Male</button>
                             </div>
                             <div class="voice-group" data-lang="nl">
-                                <span class="voice-group__flag">🇳🇱</span>
+                                <span class="voice-group__flag">🇳🇱</span><span class="voice-group__code">NL</span>
                                 <button class="voice-pill" data-voice="nl_female">Female</button>
                                 <button class="voice-pill" data-voice="nl_male">Male</button>
                             </div>
                             <div class="voice-group" data-lang="hi">
-                                <span class="voice-group__flag">🇮🇳</span>
+                                <span class="voice-group__flag">🇮🇳</span><span class="voice-group__code">HI</span>
                                 <button class="voice-pill" data-voice="hi_female">Female</button>
                                 <button class="voice-pill" data-voice="hi_male">Male</button>
                             </div>
                             <div class="voice-group" data-lang="ar">
-                                <span class="voice-group__flag">🇸🇦</span>
+                                <span class="voice-group__flag">🇸🇦</span><span class="voice-group__code">AR</span>
                                 <button class="voice-pill" data-voice="ar_male">Male</button>
                             </div>
                         </div>
@@ -191,6 +191,7 @@
                             <span id="audio-duration"></span>
                             <span id="audio-timing"></span>
                         </div>
+                        <div class="audio-breakdown hidden" id="audio-breakdown"></div>
                     </div>
                 </div>
             </div>

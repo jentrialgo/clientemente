@@ -135,10 +135,13 @@ const App = (() => {
 
   async function autoLoad() {
     setStep(2);
+    const t0 = performance.now();
     try {
       await VoxtralTTS.loadModel();
+      const elapsed = ((performance.now() - t0) / 1000).toFixed(0);
       hideProgress();
       setStep(3);
+      setOnboardingStatus(`Model loaded in ${elapsed}s`);
       modelLoaded = true;
       setTimeout(showWorkspace, 600);
     } catch (e) {
@@ -150,11 +153,13 @@ const App = (() => {
   async function loadModel() {
     $('load-btn').disabled = true;
     setStep(2);
+    const t0 = performance.now();
     try {
       await VoxtralTTS.loadModel();
+      const elapsed = ((performance.now() - t0) / 1000).toFixed(0);
       hideProgress();
       setStep(3);
-      setOnboardingStatus('Model loaded!');
+      setOnboardingStatus(`Model loaded in ${elapsed}s`);
       modelLoaded = true;
       setTimeout(showWorkspace, 600);
     } catch (e) {
@@ -169,25 +174,30 @@ const App = (() => {
     if (!text) return;
 
     setSpeakBusy(true);
+    const timings = {};
 
     try {
       // Load voice if changed
       if (selectedVoice !== currentVoice) {
         showProgress(`Loading voice...`, null);
+        const t = performance.now();
         await VoxtralTTS.loadVoice(selectedVoice);
+        timings.voice = ((performance.now() - t) / 1000).toFixed(1);
         currentVoice = selectedVoice;
       }
 
       showProgress('Tokenizing...', null);
+      let t = performance.now();
       const tokenIds = await VoxtralTTS.tokenize(text);
+      timings.tokenize = ((performance.now() - t) / 1000).toFixed(1);
 
       const maxFrames = Math.min(2000, Math.max(50, tokenIds.length * 30));
       showProgress('Synthesizing speech...', null);
-      const t0 = performance.now();
+      t = performance.now();
       const { samples, sampleRate } = await VoxtralTTS.synthesize(tokenIds, maxFrames);
-      const elapsed = ((performance.now() - t0) / 1000).toFixed(1);
+      timings.synth = ((performance.now() - t) / 1000).toFixed(1);
       const duration = (samples.length / sampleRate).toFixed(2);
-      const rtf = (parseFloat(elapsed) / parseFloat(duration)).toFixed(1);
+      const totalElapsed = Object.values(timings).reduce((a, b) => a + parseFloat(b), 0).toFixed(1);
 
       hideProgress();
       $('ws-status').textContent = 'Done';
@@ -200,7 +210,16 @@ const App = (() => {
       $('output-result').classList.remove('hidden');
       $('download-btn').classList.remove('hidden');
       $('audio-duration').textContent = `${duration}s @ ${sampleRate / 1000} kHz`;
-      $('audio-timing').textContent = `${elapsed}s · RTF ${rtf}x`;
+      $('audio-timing').textContent = `Total: ${totalElapsed}s`;
+
+      // Show timing breakdown
+      const bd = $('audio-breakdown');
+      let parts = [];
+      if (timings.voice) parts.push(`<span>Voice: ${timings.voice}s</span>`);
+      parts.push(`<span>Tokenize: ${timings.tokenize}s</span>`);
+      parts.push(`<span>Synthesis: ${timings.synth}s</span>`);
+      bd.innerHTML = parts.join('');
+      bd.classList.remove('hidden');
     } catch (e) {
       hideProgress();
       showWorkspaceError(e.message || 'Synthesis failed');
